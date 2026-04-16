@@ -1,0 +1,113 @@
+:root {
+    --burdeos: #7A1F2A;
+    --dorado: #C9A66B;
+    --blanco: #FFFFFF;
+    --gris-suave: #F5F5F5;
+    --gris-texto: #333333;
+    --fuente-base: 'Montserrat', sans-serif;
+}
+
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--fuente-base);
+    background-color: var(--gris-suave);
+    color: var(--gris-texto);
+}
+
+/* HEADER */
+.header {
+    background-color: var(--burdeos);
+    padding: 0.8rem 1.5rem;
+    color: var(--blanco);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-logo .logo-text {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+.btn-header {
+    background-color: var(--dorado);
+    color: var(--blanco);
+    padding: 0.45rem 0.9rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+}
+
+.btn-header:hover {
+    opacity: 0.85;
+}
+
+.btn-secundario {
+    background-color: transparent;
+    border: 2px solid var(--dorado);
+}
+
+.btn-logout {
+    background-color: rgba(255,255,255,0.2);
+}
+
+.usuario-rol {
+    margin-right: 0.5rem;
+    font-weight: 500;
+}
+
+
+/* FOOTER */
+.footer {
+    background-color: #222;
+    color: var(--blanco);
+    padding: 0.5rem 0;
+    margin-top: 2rem;
+    font-size: 0.85rem;
+}
+
+.footer-inner {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;               /* ← Alineación en fila */
+    justify-content: space-between; /* ← Izquierda / derecha */
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.footer-left {
+    text-align: left;
+}
+
+.footer-right {
+    text-align: right;
+    opacity: 0.8;
+    font-size: 0.8rem;
+}
+
+
+/* CONTENIDO */
+.contenido-principal {
+    max-width: 1200px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+}

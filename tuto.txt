@@ -1,0 +1,2 @@
+PARA LAZAR BACKUP
+./restore.sh backups/backup_2026-04-16_17-40-12.sql

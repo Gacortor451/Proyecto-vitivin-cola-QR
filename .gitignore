@@ -1,0 +1,56 @@
+# ============================
+#   ARCHIVOS SENSIBLES
+# ============================
+
+# Configuración con credenciales reales
+www/config/database.php
+
+# ============================
+#   BACKUPS Y SQL
+# ============================
+
+# No subir backups pesados
+backups/
+
+# ============================
+#   ARCHIVOS DEL SISTEMA
+# ============================
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# ============================
+#   EDITORES
+# ============================
+
+# VSCode
+.vscode/
+
+# PHPStorm / JetBrains
+.idea/
+
+# ============================
+#   LOGS
+# ============================
+
+*.log
+*.error_log
+
+# ============================
+#   ARCHIVOS TEMPORALES
+# ============================
+
+# Archivos temporales de PHP
+*.cache
+*.tmp
+*.swp
+
+# ============================
+#   DOCKER
+# ============================
+
+# Volúmenes o datos generados por contenedores (si los usas)
+data/
