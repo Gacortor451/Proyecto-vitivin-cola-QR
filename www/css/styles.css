@@ -111,3 +111,299 @@ body {
     margin: 1.5rem auto;
     padding: 0 1rem;
 }
+
+/* ================================
+   ESTILOS PARA LA VISTA DEL LOTE
+   ================================ */
+
+.lote-contenedor {
+    background: var(--blanco);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+}
+
+.lote-info {
+    margin-bottom: 2rem;
+}
+
+.lote-titulo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--burdeos);
+    margin-bottom: 0.5rem;
+}
+
+.lote-descripcion {
+    margin: 0.5rem 0 1rem;
+    line-height: 1.5;
+}
+
+.lote-datos p {
+    margin: 0.3rem 0;
+}
+
+.lote-likes {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: var(--burdeos);
+}
+
+.likes-info {
+    font-size: 0.85rem;
+    color: #777;
+    margin-left: 0.4rem;
+}
+
+/* TRAZABILIDAD */
+.lote-trazabilidad h2,
+.lote-comentarios h2 {
+    margin-bottom: 1rem;
+    color: var(--burdeos);
+    font-size: 1.4rem;
+}
+
+.timeline {
+    list-style: none;
+    padding-left: 1rem;
+    border-left: 3px solid var(--dorado);
+}
+
+.timeline li {
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.timeline li::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    background: var(--burdeos);
+    border-radius: 50%;
+    position: absolute;
+    left: -7px;
+    top: 4px;
+}
+
+.timeline-etapa {
+    background: var(--gris-suave);
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+}
+
+/* COMENTARIOS */
+.comentario-card {
+    background: var(--gris-suave);
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.8rem;
+}
+
+.comentario-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+}
+
+.comentario-autor {
+    font-weight: 600;
+    color: var(--burdeos);
+}
+
+.comentario-fecha {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+.mensaje-visitante {
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
+    background: #FFF7E6;
+    border-left: 4px solid var(--dorado);
+    border-radius: 6px;
+}
+
+.mensaje-visitante a {
+    color: var(--burdeos);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* ============================
+   LOGIN
+   ============================ */
+
+.login-contenedor {
+    background: var(--blanco);
+    max-width: 450px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.login-titulo {
+    text-align: center;
+    color: var(--burdeos);
+    margin-bottom: 1.5rem;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.login-form label {
+    font-weight: 600;
+}
+
+.login-form input {
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.btn-login {
+    background: var(--burdeos);
+    color: var(--blanco);
+    padding: 0.7rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+.btn-login:hover {
+    opacity: 0.9;
+}
+
+.login-error {
+    background: #ffe0e0;
+    border-left: 4px solid #c0392b;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.login-registro {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.login-registro a {
+    color: var(--burdeos);
+    font-weight: 600;
+    text-decoration: none;
+}
+.login-exito {
+    background: #e6ffe6;
+    border-left: 4px solid #27ae60;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.login-exito a {
+    color: var(--burdeos);
+    font-weight: 600;
+    text-decoration: none;
+}
+/* ============================
+   PERFIL DE USUARIO
+   ============================ */
+
+.perfil-contenedor {
+    background: var(--blanco);
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.perfil-titulo {
+    text-align: center;
+    color: var(--burdeos);
+    margin-bottom: 1.5rem;
+}
+
+.perfil-card p {
+    margin: 0.6rem 0;
+    font-size: 1rem;
+}
+
+.perfil-acciones {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.btn-logout-perfil {
+    background: var(--burdeos);
+    color: var(--blanco);
+    padding: 0.7rem 1.2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.btn-logout-perfil:hover {
+    opacity: 0.9;
+}
+/* ============================
+   FORMULARIO DE COMENTARIOS
+   ============================ */
+
+.comentario-form {
+    margin-top: 1.5rem;
+    background: var(--gris-suave);
+    padding: 1rem 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.comentario-form textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 0.8rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    font-family: var(--fuente-base);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    transition: border-color 0.2s ease;
+}
+
+.comentario-form textarea:focus {
+    border-color: var(--burdeos);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(122, 31, 42, 0.15);
+}
+
+.btn-comentar {
+    background: var(--burdeos);
+    color: var(--blanco);
+    padding: 0.7rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: flex-end;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.btn-comentar:hover {
+    opacity: 0.9;
+}
+
+.btn-comentar:active {
+    transform: scale(0.97);
+}
+
