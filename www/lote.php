@@ -148,12 +148,46 @@ $trazabilidad = $stmt->fetchAll();
             <?php echo nl2br(htmlspecialchars($lote['descripcion'] ?? '')); ?>
         </p>
 
-        <div class="lote-datos">
-            <p><strong>Variedad:</strong> <?php echo htmlspecialchars($lote['variedad'] ?? 'No especificado'); ?></p>
-            <p><strong>Origen:</strong> <?php echo htmlspecialchars($lote['origen'] ?? 'No especificado'); ?></p>
-            <p><strong>Estado:</strong> <?php echo htmlspecialchars($lote['estado'] ?? 'No especificado'); ?></p>
-            <p><strong>Vendimia:</strong> <?php echo htmlspecialchars($lote['fecha_vendimia'] ?? 'No especificado'); ?></p>
-        </div>
+<div class="lote-datos">
+
+    <p><strong>Variedad de uva:</strong> 
+        <?php echo $lote['variedad_uva'] ?: 'No especificado'; ?>
+    </p>
+
+    <p><strong>Fecha de cosecha:</strong> 
+        <?php echo $lote['fecha_cosecha'] ?: 'No especificado'; ?>
+    </p>
+
+    <p><strong>Bodega:</strong> 
+        <?php echo $lote['bodega'] ?: 'No especificado'; ?>
+    </p>
+
+    <p><strong>Nombre del producto:</strong> 
+        <?php echo $lote['nombre_producto'] ?: 'No especificado'; ?>
+    </p>
+
+    <p><strong>Fecha de producción:</strong> 
+        <?php echo $lote['fecha_produccion'] ?: 'No especificado'; ?>
+    </p>
+
+    <p><strong>Graduación alcohólica:</strong> 
+        <?php echo $lote['graduacion_alcoholica'] ?: 'No especificado'; ?>
+    </p>
+
+    <p><strong>Acidez:</strong> 
+        <?php echo $lote['acidez'] ?: 'No especificado'; ?>
+    </p>
+
+    <p><strong>pH:</strong> 
+        <?php echo $lote['ph'] ?: 'No especificado'; ?>
+    </p>
+
+    <p><strong>Sulfuroso total:</strong> 
+        <?php echo $lote['sulfuroso_total'] ?: 'No especificado'; ?>
+    </p>
+
+</div>
+
 
         <div class="lote-likes">
             ❤️ <?php echo $likes; ?> likes
@@ -211,7 +245,7 @@ $trazabilidad = $stmt->fetchAll();
 
         <?php if ($logueado): ?>
             <form method="POST" class="comentario-form">
-                <textarea name="comentario" placeholder="Escribe un comentario..." required></textarea>
+                <textarea name="comentario" class="textarea-control" placeholder="Escribe un comentario..." required></textarea>
                 <button type="submit" class="btn-comentar">Publicar comentario</button>
             </form>
         <?php else: ?>

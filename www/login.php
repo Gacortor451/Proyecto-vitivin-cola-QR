@@ -42,8 +42,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
            exit;
 }
 
-header("Location: /index.php");
+// Redirección inteligente
+if (!empty($_SESSION['redirect_after_login'])) {
+    $destino = $_SESSION['redirect_after_login'];
+    unset($_SESSION['redirect_after_login']);
+    header("Location: " . $destino);
+    exit;
+}
+
+// Redirección según rol
+switch ($_SESSION['rol']) {
+    case 'empleado':
+        header("Location: /personal.php");
+        break;
+
+    case 'admin':
+        header("Location: /admin.php");
+        break;
+
+    default:
+        header("Location: /index.php");
+        break;
+}
+
 exit;
+
 
 
         } else {
