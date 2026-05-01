@@ -12,6 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($email === '' || $password === '') {
         $errores[] = "Debes rellenar todos los campos.";
     } else {
+
         // Conexión BD
         $db = new Database();
         $conn = $db->getConnection();
@@ -33,41 +34,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $_SESSION['rol'] = strtolower($rol);
 
-            // Redirigir
-           if (!empty($_SESSION['redirect_after_login'])) {
-            $destino = $_SESSION['redirect_after_login'];
-            unset($_SESSION['redirect_after_login']);
-            
-           header("Location: " . $destino);
-           exit;
-}
+            // Redirección inteligente (si venía de una página protegida)
+            if (!empty($_SESSION['redirect_after_login'])) {
+                $destino = $_SESSION['redirect_after_login'];
+                unset($_SESSION['redirect_after_login']);
+                header("Location: " . $destino);
+                exit;
+            }
 
-// Redirección inteligente
-if (!empty($_SESSION['redirect_after_login'])) {
-    $destino = $_SESSION['redirect_after_login'];
-    unset($_SESSION['redirect_after_login']);
-    header("Location: " . $destino);
-    exit;
-}
+            // Redirección según rol
+            switch ($_SESSION['rol']) {
 
-// Redirección según rol
-switch ($_SESSION['rol']) {
-    case 'empleado':
-        header("Location: /personal.php");
-        break;
+                case 'admin':
+                    header("Location: /admin/admin.php");
+                    break;
 
-    case 'admin':
-        header("Location: /admin.php");
-        break;
+                case 'auditor':
+                    header("Location: /auditor/auditor.php");
+                    break;
 
-    default:
-        header("Location: /index.php");
-        break;
-}
+                case 'empleado':
+                    header("Location: /personal/personal.php");
+                    break;
 
-exit;
+                case 'usuario':
+                default:
+                    header("Location: /index.php");
+                    break;
+            }
 
-
+            exit;
 
         } else {
             $errores[] = "Credenciales incorrectas.";

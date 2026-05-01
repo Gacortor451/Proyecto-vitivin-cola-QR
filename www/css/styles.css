@@ -678,5 +678,441 @@ body {
     box-shadow: 0 0 0 2px rgba(122, 31, 42, 0.15);
 }
 
+/* ============================================
+   VISTA AUDITOR
+   ============================================ */
+
+.auditor-contenedor {
+    max-width: 900px;
+    margin: 2rem auto;
+    background: var(--blanco);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.auditor-titulo {
+    text-align: center;
+    color: var(--burdeos);
+    margin-bottom: 1.5rem;
+}
+
+.auditor-buscador {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+}
+
+.auditor-input {
+    flex: 1;
+    padding: 0.7rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.auditor-btn {
+    background: var(--burdeos);
+    color: var(--blanco);
+    padding: 0.7rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.auditor-btn:hover {
+    opacity: 0.9;
+}
+
+.auditor-subtitulo {
+    margin-bottom: 1rem;
+    color: var(--burdeos);
+}
+
+.auditor-noresultados {
+    padding: 1rem;
+    background: #fff3f3;
+    border-left: 4px solid #c0392b;
+    border-radius: 6px;
+}
+
+.auditor-lista {
+    list-style: none;
+    padding: 0;
+}
+
+.auditor-item {
+    background: var(--gris-suave);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.auditor-ver-btn {
+    background: var(--dorado);
+    color: var(--blanco);
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auditor-ver-btn:hover {
+    opacity: 0.9;
+}
+
+.auditor-bodega {
+    font-size: 0.85rem;
+    color: #666;
+}
+/* ============================================
+   AUDITOR — VISTA DEL LOTE
+   ============================================ */
+
+.auditor-lote-contenedor {
+    max-width: 900px;
+    margin: 2rem auto;
+    background: var(--blanco);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.auditor-lote-titulo {
+    text-align: center;
+    color: var(--burdeos);
+    margin-bottom: 2rem;
+}
+
+.auditor-card {
+    background: var(--gris-suave);
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.auditor-subtitulo {
+    color: var(--burdeos);
+    margin-bottom: 1rem;
+}
+
+.auditor-datos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 0.8rem;
+}
+
+.auditor-descripcion {
+    margin-top: 1rem;
+}
+
+.incidencia-card {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--dorado);
+}
+
+.auditor-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.auditor-btn-crear {
+    background: var(--burdeos);
+    color: var(--blanco);
+    padding: 0.8rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    align-self: flex-end;
+}
+
+.auditor-btn-crear:hover {
+    opacity: 0.9;
+}
 
 
+/* ============================
+   ADMIN — TOP NAV (NUEVO)
+   ============================ */
+
+.admin-topbar {
+    width: 100%;
+    background: var(--burdeos);
+    color: var(--blanco);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.admin-topbar a {
+    color: var(--blanco);
+    text-decoration: none;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.admin-topbar a:hover,
+.admin-topbar a.activo {
+    background: rgba(255,255,255,0.15);
+}
+
+.admin-topbar .salir {
+    background: #8b0000;
+}
+
+/* ============================
+   ADMIN — CONTENIDO
+   ============================ */
+
+.admin-contenido {
+    padding: 2rem;
+    width: 100%;
+}
+
+/* ============================
+   RESTO DE TU CSS (SIN CAMBIOS)
+   ============================ */
+
+.admin-titulo {
+    color: var(--burdeos);
+    margin-bottom: 2rem;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.admin-card {
+    background: var(--gris-suave);
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.admin-numero {
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: var(--burdeos);
+}
+
+.admin-subtitulo {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: var(--burdeos);
+}
+
+.admin-grid-roles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.admin-card-rol {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--dorado);
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+}
+
+/* Tarjetas de incidencias */
+.admin-lista-incidencias {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.incidencia-card-admin {
+    background: #fff;
+    padding: 1.2rem;
+    border-radius: 10px;
+    border-left: 6px solid var(--burdeos);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.incidencia-card-admin.pendiente {
+    border-left-color: #d9534f;
+}
+
+.incidencia-card-admin.resuelta {
+    border-left-color: #5cb85c;
+}
+
+.admin-btn-resolver {
+    background: var(--burdeos);
+    color: var(--blanco);
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.admin-btn-resolver:hover {
+    background: #5a0f0f;
+}
+
+.admin-badge-resuelto {
+    background: #5cb85c;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.admin-form input,
+.admin-form textarea {
+    padding: 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.admin-btn-guardar {
+    background: var(--dorado);
+    color: var(--burdeos);
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.admin-btn-guardar:hover {
+    background: #e0b84a;
+}
+
+.admin-btn-crear {
+    display: inline-block;
+    background: var(--dorado);
+    color: var(--burdeos);
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    margin-bottom: 1rem;
+}
+
+.admin-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.admin-tabla th {
+    background: var(--burdeos);
+    color: white;
+    padding: 0.8rem;
+    text-align: left;
+}
+
+.admin-tabla td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.admin-btn-tabla {
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    text-decoration: none;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.admin-btn-tabla.editar {
+    background: #0275d8;
+}
+
+.admin-btn-tabla.eliminar {
+    background: #d9534f;
+}
+
+.admin-error {
+    background: #d9534f;
+    color: white;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.admin-exito {
+    background: #5cb85c;
+    color: white;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.admin-btn-volver {
+    display: inline-block;
+    background: var(--burdeos);
+    color: white;
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.admin-form select {
+    padding: 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+.admin-btn-tabla {
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    text-decoration: none;
+    color: white;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin: 0.1rem 0.1rem; /* NUEVO: separación mínima */
+}
+
+@media (max-width: 768px) {
+
+    /* La tabla se hace más scrolleable horizontalmente */
+    .admin-tabla {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    /* Celda de acciones: apilamos los botones */
+    .admin-tabla td:last-child {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .admin-btn-tabla {
+        width: 100%;
+        text-align: center;
+        font-size: 0.85rem;
+        padding: 0.5rem 0.6rem;
+    }
+}
