@@ -42,23 +42,13 @@ $stmt = $conn->query("SELECT COUNT(*) FROM lotes");
 $total_lotes = $stmt->fetchColumn();
 
 include __DIR__ . '/../includes/header.php';
+include __DIR__ . '/../includes/admin_topbar.php';
 ?>
-
-<!-- NUEVA BARRA SUPERIOR -->
-<div class="admin-topbar">
-    <span><strong>Administrador</strong></span>
-
-    <a href="/admin/admin.php" class="activo">Dashboard</a>
-    <a href="/admin/incidencias.php">Incidencias</a>
-    <a href="/admin/usuarios.php">Usuarios</a>
-
-    <a href="/logout.php" class="salir">Salir</a>
-</div>
 
 <!-- CONTENIDO -->
 <div class="admin-contenido">
 
-    <h1 class="admin-titulo">Panel de Administración</h1>
+    <h1 class="admin-titulo">Resumen del sistema</h1>
 
     <div class="admin-grid">
 

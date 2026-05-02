@@ -25,6 +25,10 @@ $lotes = $stmt->fetchAll();
     <p class="personal-subtitulo">
         Selecciona un lote para añadir información o completar datos.
     </p>
+    
+    <a class="personal-lote-link" href="/personal_crear_lote.php">
+        ➕ Crear nuevo lote
+    </a>
 
     <ul class="personal-lista-lotes">
         <?php foreach ($lotes as $l): ?>

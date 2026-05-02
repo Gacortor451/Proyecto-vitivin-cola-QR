@@ -53,67 +53,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 include __DIR__ . '/../includes/header.php';
+include __DIR__ . '/../includes/admin_topbar.php';
 ?>
 
-<div class="admin-layout">
+<!-- CONTENIDO -->
+<div class="admin-contenido">
 
-    <!-- MENÚ LATERAL -->
-    <aside class="admin-menu">
-        <h2 class="admin-menu-titulo">Administrador</h2>
+    <h1 class="admin-titulo">Crear nuevo usuario</h1>
 
-        <nav class="admin-nav">
-            <a href="/admin/admin.php" class="admin-nav-item">📊 Dashboard</a>
-            <a href="/admin/incidencias.php" class="admin-nav-item">⚠️ Incidencias</a>
-            <a href="/admin/usuarios.php" class="admin-nav-item activo">👥 Usuarios</a>
-            <a href="/logout.php" class="admin-nav-item salir">⛔ Cerrar sesión</a>
-        </nav>
-    </aside>
+    <?php if ($exito): ?>
+        <p class="admin-exito">Usuario creado correctamente.</p>
+        <a href="/admin/usuarios.php" class="admin-btn-volver">Volver al listado</a>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <main class="admin-contenido">
+    <?php else: ?>
 
-        <h1 class="admin-titulo">Crear nuevo usuario</h1>
-
-        <?php if ($exito): ?>
-            <p class="admin-exito">Usuario creado correctamente.</p>
-            <a href="/admin/usuarios.php" class="admin-btn-volver">Volver al listado</a>
-        <?php else: ?>
-
-            <?php if (!empty($errores)): ?>
-                <div class="admin-error">
-                    <?php foreach ($errores as $e): ?>
-                        <p><?php echo htmlspecialchars($e); ?></p>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-
-            <form action="" method="POST" class="admin-form">
-
-                <label>Nombre</label>
-                <input type="text" name="nombre" required>
-
-                <label>Email</label>
-                <input type="email" name="email" required>
-
-                <label>Contraseña</label>
-                <input type="password" name="password" required>
-
-                <label>Rol</label>
-                <select name="rol" required>
-                    <option value="">Seleccionar rol</option>
-                    <option value="1">Administrador</option>
-                    <option value="2">Auditor</option>
-                    <option value="3">Empleado</option>
-                    <option value="4">Usuario</option>
-                </select>
-
-                <button type="submit" class="admin-btn-guardar">Crear usuario</button>
-
-            </form>
-
+        <?php if (!empty($errores)): ?>
+            <div class="admin-error">
+                <?php foreach ($errores as $e): ?>
+                    <p><?php echo htmlspecialchars($e); ?></p>
+                <?php endforeach; ?>
+            </div>
         <?php endif; ?>
 
-    </main>
+        <form action="" method="POST" class="admin-form">
+
+            <label>Nombre</label>
+            <input type="text" name="nombre" required>
+
+            <label>Email</label>
+            <input type="email" name="email" required>
+
+            <label>Contraseña</label>
+            <input type="password" name="password" required>
+
+            <label>Rol</label>
+            <select name="rol" required>
+                <option value="">Seleccionar rol</option>
+                <option value="1">Administrador</option>
+                <option value="2">Auditor</option>
+                <option value="3">Empleado</option>
+                <option value="4">Usuario</option>
+            </select>
+
+            <button type="submit" class="admin-btn-guardar">Crear usuario</button>
+
+        </form>
+
+    <?php endif; ?>
 
 </div>
 

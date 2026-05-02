@@ -18,6 +18,10 @@ if (!$id_incidencia || !$id_lote) {
 $db = new Database();
 $conn = $db->getConnection();
 
+// Normalizar fechas vacías a NULL
+$fecha_cosecha = !empty($_POST['fecha_cosecha']) ? $_POST['fecha_cosecha'] : null;
+$fecha_produccion = !empty($_POST['fecha_produccion']) ? $_POST['fecha_produccion'] : null;
+
 // ============================
 // 1. ACTUALIZAR DATOS DEL LOTE
 // ============================
@@ -41,10 +45,10 @@ $stmt = $conn->prepare("
 $stmt->execute([
     ':codigo_lote' => $_POST['codigo_lote'] ?? '',
     ':variedad_uva' => $_POST['variedad_uva'] ?? '',
-    ':fecha_cosecha' => $_POST['fecha_cosecha'] ?? null,
+    ':fecha_cosecha' => $fecha_cosecha,
     ':bodega' => $_POST['bodega'] ?? '',
     ':nombre_producto' => $_POST['nombre_producto'] ?? '',
-    ':fecha_produccion' => $_POST['fecha_produccion'] ?? null,
+    ':fecha_produccion' => $fecha_produccion,
     ':graduacion_alcoholica' => $_POST['graduacion_alcoholica'] ?? '',
     ':acidez' => $_POST['acidez'] ?? '',
     ':ph' => $_POST['ph'] ?? '',

@@ -59,68 +59,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 include __DIR__ . '/../includes/header.php';
+include __DIR__ . '/../includes/admin_topbar.php';
 ?>
 
-<div class="admin-layout">
+<!-- CONTENIDO -->
+<div class="admin-contenido">
 
-    <!-- MENÚ LATERAL -->
-    <aside class="admin-menu">
-        <h2 class="admin-menu-titulo">Administrador</h2>
+    <h1 class="admin-titulo">Editar rol del usuario</h1>
 
-        <nav class="admin-nav">
-            <a href="/admin/admin.php" class="admin-nav-item">📊 Dashboard</a>
-            <a href="/admin/incidencias.php" class="admin-nav-item">⚠️ Incidencias</a>
-            <a href="/admin/usuarios.php" class="admin-nav-item activo">👥 Usuarios</a>
-            <a href="/logout.php" class="admin-nav-item salir">⛔ Cerrar sesión</a>
-        </nav>
-    </aside>
+    <?php if ($exito): ?>
+        <p class="admin-exito">Rol actualizado correctamente.</p>
+        <a href="/admin/usuarios.php" class="admin-btn-volver">Volver al listado</a>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <main class="admin-contenido">
+    <?php else: ?>
 
-        <h1 class="admin-titulo">Editar rol del usuario</h1>
-
-        <?php if ($exito): ?>
-            <p class="admin-exito">Rol actualizado correctamente.</p>
-            <a href="/admin/usuarios.php" class="admin-btn-volver">Volver al listado</a>
-
-        <?php else: ?>
-
-            <?php if (!empty($errores)): ?>
-                <div class="admin-error">
-                    <?php foreach ($errores as $e): ?>
-                        <p><?php echo htmlspecialchars($e); ?></p>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-
-            <form action="" method="POST" class="admin-form">
-
-                <label>Nombre</label>
-                <input type="text" value="<?php echo htmlspecialchars($usuario['nombre']); ?>" disabled>
-
-                <label>Email</label>
-                <input type="email" value="<?php echo htmlspecialchars($usuario['email']); ?>" disabled>
-
-                <label>Rol actual</label>
-                <input type="text" value="<?php echo htmlspecialchars($usuario['rol']); ?>" disabled>
-
-                <label>Nuevo rol</label>
-                <select name="rol" required>
-                    <option value="">Seleccionar rol</option>
-                    <option value="1" <?php if ($usuario['id_rol'] == 1) echo 'selected'; ?>>Administrador</option>
-                    <option value="2" <?php if ($usuario['id_rol'] == 2) echo 'selected'; ?>>Auditor</option>
-                    <option value="3" <?php if ($usuario['id_rol'] == 3) echo 'selected'; ?>>Empleado</option>
-                    <option value="4" <?php if ($usuario['id_rol'] == 4) echo 'selected'; ?>>Usuario</option>
-                </select>
-
-                <button type="submit" class="admin-btn-guardar">Guardar cambios</button>
-
-            </form>
-
+        <?php if (!empty($errores)): ?>
+            <div class="admin-error">
+                <?php foreach ($errores as $e): ?>
+                    <p><?php echo htmlspecialchars($e); ?></p>
+                <?php endforeach; ?>
+            </div>
         <?php endif; ?>
 
-    </main>
+        <form action="" method="POST" class="admin-form">
+
+            <label>Nombre</label>
+            <input type="text" value="<?php echo htmlspecialchars($usuario['nombre'] ?? ''); ?>" disabled>
+
+            <label>Email</label>
+            <input type="email" value="<?php echo htmlspecialchars($usuario['email'] ?? ''); ?>" disabled>
+
+            <label>Rol actual</label>
+            <input type="text" value="<?php echo htmlspecialchars($usuario['rol'] ?? ''); ?>" disabled>
+
+            <label>Nuevo rol</label>
+            <select name="rol" required>
+                <option value="">Seleccionar rol</option>
+                <option value="1" <?php if ($usuario['id_rol'] == 1) echo 'selected'; ?>>Administrador</option>
+                <option value="2" <?php if ($usuario['id_rol'] == 2) echo 'selected'; ?>>Auditor</option>
+                <option value="3" <?php if ($usuario['id_rol'] == 3) echo 'selected'; ?>>Empleado</option>
+                <option value="4" <?php if ($usuario['id_rol'] == 4) echo 'selected'; ?>>Usuario</option>
+            </select>
+
+            <button type="submit" class="admin-btn-guardar">Guardar cambios</button>
+
+        </form>
+
+    <?php endif; ?>
 
 </div>
 

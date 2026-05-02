@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['rol'] = strtolower($rol);
 
             // Redirección inteligente (si venía de una página protegida)
-            if (!empty($_SESSION['redirect_after_login'])) {
+            if ($_SESSION['rol'] !== 'admin' && !empty($_SESSION['redirect_after_login'])) {
                 $destino = $_SESSION['redirect_after_login'];
                 unset($_SESSION['redirect_after_login']);
                 header("Location: " . $destino);
@@ -54,10 +54,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     break;
 
                 case 'empleado':
-                    header("Location: /personal/personal.php");
+                    header("Location: /personal.php");
                     break;
 
                 case 'usuario':
+                    header("Location: /lote.php");
+                    break;
+
                 default:
                     header("Location: /index.php");
                     break;

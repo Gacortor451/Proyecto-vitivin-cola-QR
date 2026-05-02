@@ -13,7 +13,8 @@ $rol = getRolActual();
 $id_lote = $_GET['id'] ?? null;
 
 if (!$id_lote) {
-    die("Lote no especificado.");
+    header("Location: /404.php");
+    exit;
 }
 
 // Conexión BD
@@ -28,7 +29,8 @@ $stmt->execute([':id' => $id_lote]);
 $lote = $stmt->fetch();
 
 if (!$lote) {
-    die("Lote no encontrado.");
+    header("Location: /404.php");
+    exit;
 }
 
 // =========================

@@ -18,7 +18,7 @@ $db = new Database();
 $conn = $db->getConnection();
 
 // ============================
-// 1. OBTENER INCIDENCIA
+// 1. OBTENER INCIDENCIA + LOTE
 // ============================
 $stmt = $conn->prepare("
     SELECT i.*, l.*
@@ -46,83 +46,75 @@ $incidencia = [
 $lote = $data;
 
 include __DIR__ . '/../includes/header.php';
+include __DIR__ . '/../includes/admin_topbar.php';
 ?>
 
-<div class="admin-layout">
+<!-- CONTENIDO -->
+<div class="admin-contenido">
 
-    <!-- MENÚ LATERAL -->
-    <aside class="admin-menu">
-        <h2 class="admin-menu-titulo">Administrador</h2>
+    <h1 class="admin-titulo">Resolver incidencia</h1>
 
-        <nav class="admin-nav">
-            <a href="/admin/admin.php" class="admin-nav-item">📊 Dashboard</a>
-            <a href="/admin/incidencias.php" class="admin-nav-item activo">⚠️ Incidencias</a>
-            <a href="/admin/usuarios.php" class="admin-nav-item">👥 Usuarios</a>
-            <a href="/logout.php" class="admin-nav-item salir">⛔ Cerrar sesión</a>
-        </nav>
-    </aside>
+    <!-- INFORMACIÓN DE LA INCIDENCIA -->
+    <section class="admin-card">
+        <h2 class="admin-subtitulo">Información de la incidencia</h2>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <main class="admin-contenido">
+        <p><strong>Fecha:</strong> 
+            <?php echo htmlspecialchars($incidencia['fecha'] ?? ''); ?>
+        </p>
 
-        <h1 class="admin-titulo">Resolver incidencia</h1>
+        <p><strong>Descripción:</strong><br>
+            <?php echo nl2br(htmlspecialchars($incidencia['descripcion'] ?? '')); ?>
+        </p>
+    </section>
 
-        <section class="admin-card">
-            <h2 class="admin-subtitulo">Información de la incidencia</h2>
+    <!-- FORMULARIO DE EDICIÓN DEL LOTE -->
+    <section class="admin-card">
+        <h2 class="admin-subtitulo">Editar datos del lote</h2>
 
-            <p><strong>Fecha:</strong> <?php echo htmlspecialchars($incidencia['fecha']); ?></p>
-            <p><strong>Descripción:</strong><br>
-                <?php echo nl2br(htmlspecialchars($incidencia['descripcion'])); ?>
-            </p>
-        </section>
+        <form action="/admin/incidencia_update.php" method="POST" class="admin-form">
 
-        <section class="admin-card">
-            <h2 class="admin-subtitulo">Editar datos del lote</h2>
+            <input type="hidden" name="id_incidencia" value="<?php echo htmlspecialchars($incidencia['id'] ?? ''); ?>">
+            <input type="hidden" name="id_lote" value="<?php echo htmlspecialchars($incidencia['id_lote'] ?? ''); ?>">
 
-            <form action="/admin/incidencia_update.php" method="POST" class="admin-form">
+            <label>Código del lote</label>
+            <input type="text" name="codigo_lote" value="<?php echo htmlspecialchars($lote['codigo_lote'] ?? ''); ?>" required>
 
-                <input type="hidden" name="id_incidencia" value="<?php echo $incidencia['id']; ?>">
-                <input type="hidden" name="id_lote" value="<?php echo $incidencia['id_lote']; ?>">
+            <label>Variedad de uva</label>
+            <input type="text" name="variedad_uva" value="<?php echo htmlspecialchars($lote['variedad_uva'] ?? ''); ?>">
 
-                <label>Código del lote</label>
-                <input type="text" name="codigo_lote" value="<?php echo htmlspecialchars($lote['codigo_lote']); ?>" required>
+            <label>Fecha de cosecha</label>
+            <input type="date" name="fecha_cosecha" value="<?php echo htmlspecialchars($lote['fecha_cosecha'] ?? ''); ?>">
 
-                <label>Variedad de uva</label>
-                <input type="text" name="variedad_uva" value="<?php echo htmlspecialchars($lote['variedad_uva']); ?>">
+            <label>Bodega</label>
+            <input type="text" name="bodega" value="<?php echo htmlspecialchars($lote['bodega'] ?? ''); ?>">
 
-                <label>Fecha de cosecha</label>
-                <input type="date" name="fecha_cosecha" value="<?php echo htmlspecialchars($lote['fecha_cosecha']); ?>">
+            <label>Nombre del producto</label>
+            <input type="text" name="nombre_producto" value="<?php echo htmlspecialchars($lote['nombre_producto'] ?? ''); ?>">
 
-                <label>Bodega</label>
-                <input type="text" name="bodega" value="<?php echo htmlspecialchars($lote['bodega']); ?>">
+            <label>Fecha de producción</label>
+            <input type="date" name="fecha_produccion" value="<?php echo htmlspecialchars($lote['fecha_produccion'] ?? ''); ?>">
 
-                <label>Nombre del producto</label>
-                <input type="text" name="nombre_producto" value="<?php echo htmlspecialchars($lote['nombre_producto']); ?>">
+            <label>Graduación alcohólica</label>
+            <input type="text" name="graduacion_alcoholica" value="<?php echo htmlspecialchars($lote['graduacion_alcoholica'] ?? ''); ?>">
 
-                <label>Fecha de producción</label>
-                <input type="date" name="fecha_produccion" value="<?php echo htmlspecialchars($lote['fecha_produccion']); ?>">
+            <label>Acidez</label>
+            <input type="text" name="acidez" value="<?php echo htmlspecialchars($lote['acidez'] ?? ''); ?>">
 
-                <label>Graduación alcohólica</label>
-                <input type="text" name="graduacion_alcoholica" value="<?php echo htmlspecialchars($lote['graduacion_alcoholica']); ?>">
+            <label>pH</label>
+            <input type="text" name="ph" value="<?php echo htmlspecialchars($lote['ph'] ?? ''); ?>">
 
-                <label>Acidez</label>
-                <input type="text" name="acidez" value="<?php echo htmlspecialchars($lote['acidez']); ?>">
+            <label>Sulfuroso total</label>
+            <input type="text" name="sulfuroso_total" value="<?php echo htmlspecialchars($lote['sulfuroso_total'] ?? ''); ?>">
 
-                <label>pH</label>
-                <input type="text" name="ph" value="<?php echo htmlspecialchars($lote['ph']); ?>">
+            <label>Descripción</label>
+            <textarea name="descripcion" class="textarea-control"><?php echo htmlspecialchars($lote['descripcion'] ?? ''); ?></textarea>
 
-                <label>Sulfuroso total</label>
-                <input type="text" name="sulfuroso_total" value="<?php echo htmlspecialchars($lote['sulfuroso_total']); ?>">
+            <button type="submit" class="admin-btn-guardar">
+                Guardar cambios y marcar como resuelta
+            </button>
 
-                <label>Descripción</label>
-                <textarea name="descripcion" class="textarea-control"><?php echo htmlspecialchars($lote['descripcion']); ?></textarea>
-
-                <button type="submit" class="admin-btn-guardar">Guardar cambios y marcar como resuelta</button>
-
-            </form>
-        </section>
-
-    </main>
+        </form>
+    </section>
 
 </div>
 

@@ -34,18 +34,8 @@ $stmt = $conn->query("
 $resueltas = $stmt->fetchAll();
 
 include __DIR__ . '/../includes/header.php';
+include __DIR__ . '/../includes/admin_topbar.php';
 ?>
-
-<!-- NUEVA BARRA SUPERIOR -->
-<div class="admin-topbar">
-    <span><strong>Administrador</strong></span>
-
-    <a href="/admin/admin.php">Dashboard</a>
-    <a href="/admin/incidencias.php" class="activo">Incidencias</a>
-    <a href="/admin/usuarios.php">Usuarios</a>
-
-    <a href="/logout.php" class="salir">Salir</a>
-</div>
 
 <!-- CONTENIDO -->
 <div class="admin-contenido">

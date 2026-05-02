@@ -18,7 +18,7 @@ $db = new Database();
 $conn = $db->getConnection();
 
 // Evitar que un admin se elimine a sí mismo
-if ($id == $_SESSION['usuario']) {
+if ($id == ($_SESSION['usuario_id'] ?? null)) {
     die("No puedes eliminar tu propio usuario.");
 }
 

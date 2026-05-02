@@ -21,18 +21,8 @@ $stmt = $conn->query("
 $usuarios = $stmt->fetchAll();
 
 include __DIR__ . '/../includes/header.php';
+include __DIR__ . '/../includes/admin_topbar.php';
 ?>
-
-<!-- NUEVA BARRA SUPERIOR -->
-<div class="admin-topbar">
-    <span><strong>Administrador</strong></span>
-
-    <a href="/admin/admin.php">Dashboard</a>
-    <a href="/admin/incidencias.php">Incidencias</a>
-    <a href="/admin/usuarios.php" class="activo">Usuarios</a>
-
-    <a href="/logout.php" class="salir">Salir</a>
-</div>
 
 <!-- CONTENIDO -->
 <div class="admin-contenido">
@@ -56,9 +46,9 @@ include __DIR__ . '/../includes/header.php';
             <?php foreach ($usuarios as $u): ?>
                 <tr>
                     <td><?php echo $u['id']; ?></td>
-                    <td><?php echo htmlspecialchars($u['nombre']); ?></td>
-                    <td><?php echo htmlspecialchars($u['email']); ?></td>
-                    <td><?php echo htmlspecialchars($u['rol']); ?></td>
+                    <td><?php echo htmlspecialchars($u['nombre'] ?? ''); ?></td>
+                    <td><?php echo htmlspecialchars($u['email'] ?? ''); ?></td>
+                    <td><?php echo htmlspecialchars($u['rol'] ?? ''); ?></td>
 
                     <td>
                         <a href="/admin/usuario_editar.php?id=<?php echo $u['id']; ?>" 
