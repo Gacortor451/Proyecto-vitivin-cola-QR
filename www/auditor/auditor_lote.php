@@ -61,6 +61,21 @@ include __DIR__ . '/../includes/header.php';
         Auditoría del lote: <?php echo htmlspecialchars($lote['codigo_lote'] ?? ''); ?>
     </h1>
 
+    <!-- QR DEL LOTE -->
+<section class="auditor-card">
+    <h2 class="auditor-subtitulo">QR del lote</h2>
+
+    <?php if (!empty($lote['qr_url'])): ?>
+        <div class="auditor-qr-contenedor">
+            <img src="<?php echo htmlspecialchars($lote['qr_url']); ?>" 
+                 alt="QR del lote" 
+                 class="auditor-qr-imagen">
+        </div>
+    <?php else: ?>
+        <p>No hay QR generado para este lote.</p>
+    <?php endif; ?>
+</section>
+
     <!-- DATOS DEL LOTE -->
     <section class="auditor-card">
         <h2 class="auditor-subtitulo">Datos del lote</h2>
@@ -123,7 +138,10 @@ include __DIR__ . '/../includes/header.php';
                     <li>
                         <div class="timeline-etapa">
                             <h3><?php echo htmlspecialchars($evento['tipo_evento'] ?? ''); ?></h3>
-                            <p><strong>Fecha:</strong> <?php echo htmlspecialchars($evento['fecha'] ?? ''); ?></p>
+
+                            <p><strong>Fecha:</strong> 
+                                <?php echo date("d/m/Y H:i", strtotime($evento['fecha'])); ?>
+                            </p>
 
                             <?php if (!empty($evento['descripcion'])): ?>
                                 <p><?php echo nl2br(htmlspecialchars($evento['descripcion'] ?? '')); ?></p>
@@ -145,8 +163,13 @@ include __DIR__ . '/../includes/header.php';
             <?php foreach ($incidencias as $inc): ?>
                 <div class="incidencia-card">
                     <p><strong>Estado:</strong> <?php echo htmlspecialchars($inc['estado'] ?? ''); ?></p>
-                    <p><strong>Fecha:</strong> <?php echo htmlspecialchars($inc['fecha'] ?? ''); ?></p>
+
+                    <p><strong>Fecha:</strong> 
+                        <?php echo date("d/m/Y H:i", strtotime($inc['fecha'])); ?>
+                    </p>
+
                     <p><strong>Creada por:</strong> <?php echo htmlspecialchars($inc['creador'] ?? ''); ?></p>
+
                     <p><strong>Descripción:</strong><br>
                         <?php echo nl2br(htmlspecialchars($inc['descripcion'] ?? '')); ?>
                     </p>

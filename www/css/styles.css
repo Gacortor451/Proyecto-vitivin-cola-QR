@@ -839,6 +839,20 @@ body {
     opacity: 0.9;
 }
 
+.auditor-qr-contenedor {
+    text-align: center;
+    padding: 20px;
+}
+
+.auditor-qr-imagen {
+    width: 200px;
+    height: auto;
+    border: 3px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    padding: 10px;
+}
+
 
 /* ============================
    ADMIN — TOP NAV (NUEVO)

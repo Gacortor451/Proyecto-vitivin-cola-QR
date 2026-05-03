@@ -237,7 +237,10 @@ $trazabilidad = $stmt->fetchAll();
             <article class="comentario-card">
                 <header class="comentario-header">
                     <span class="comentario-autor"><?php echo htmlspecialchars($c['nombre']); ?></span>
-                    <span class="comentario-fecha"><?php echo $c['fecha']; ?></span>
+                    <span class="comentario-fecha">
+                        <?php echo date("d/m/Y H:i", strtotime($c['fecha'])); ?>
+                    </span>
+
                 </header>
                 <p class="comentario-texto">
                     <?php echo nl2br(htmlspecialchars($c['texto'])); ?>

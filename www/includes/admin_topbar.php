@@ -20,10 +20,5 @@ $actual = basename($_SERVER['PHP_SELF']);
        Usuarios
     </a>
 
-    <a href="/admin/lotes/index.php" 
-       class="<?php echo (strpos($_SERVER['REQUEST_URI'], '/admin/lotes/') !== false) ? 'activo' : ''; ?>">
-       Lotes
-    </a>
-
 </div>
 
