@@ -1,12 +1,9 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../config/database.php';
+requireLogin();
+requireRole(['admin']);
 
-// Solo administradores
-if (!estaLogueado() || getRolActual() !== 'admin') {
-    header("Location: /login.php");
-    exit;
-}
+require_once __DIR__ . '/../config/database.php';
 
 $id_incidencia = $_POST['id_incidencia'] ?? null;
 $id_lote = $_POST['id_lote'] ?? null;

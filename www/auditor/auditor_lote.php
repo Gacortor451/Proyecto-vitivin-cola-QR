@@ -1,12 +1,9 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../config/database.php';
+requireLogin();
+requireRole(['auditor', 'admin']);
 
-// Solo auditores
-if (!estaLogueado() || getRolActual() !== 'auditor') {
-    header("Location: /login.php");
-    exit;
-}
+require_once __DIR__ . '/../config/database.php';
 
 $id_lote = $_GET['id'] ?? null;
 
@@ -62,19 +59,19 @@ include __DIR__ . '/../includes/header.php';
     </h1>
 
     <!-- QR DEL LOTE -->
-<section class="auditor-card">
-    <h2 class="auditor-subtitulo">QR del lote</h2>
+    <section class="auditor-card">
+        <h2 class="auditor-subtitulo">QR del lote</h2>
 
-    <?php if (!empty($lote['qr_url'])): ?>
-        <div class="auditor-qr-contenedor">
-            <img src="<?php echo htmlspecialchars($lote['qr_url']); ?>" 
-                 alt="QR del lote" 
-                 class="auditor-qr-imagen">
-        </div>
-    <?php else: ?>
-        <p>No hay QR generado para este lote.</p>
-    <?php endif; ?>
-</section>
+        <?php if (!empty($lote['qr_url'])): ?>
+            <div class="auditor-qr-contenedor">
+                <img src="<?php echo htmlspecialchars($lote['qr_url']); ?>" 
+                     alt="QR del lote" 
+                     class="auditor-qr-imagen">
+            </div>
+        <?php else: ?>
+            <p>No hay QR generado para este lote.</p>
+        <?php endif; ?>
+    </section>
 
     <!-- DATOS DEL LOTE -->
     <section class="auditor-card">

@@ -2,6 +2,34 @@
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/config/database.php';
 
+// Si ya está logueado, no debe registrarse
+if (estaLogueado()) {
+
+    switch (getRolActual()) {
+        case 'admin':
+            header("Location: /admin/admin.php");
+            break;
+
+        case 'auditor':
+            header("Location: /auditor/auditor.php");
+            break;
+
+        case 'empleado':
+            header("Location: /personal.php");
+            break;
+
+        case 'usuario':
+            header("Location: /lote.php");
+            break;
+
+        default:
+            header("Location: /index.php");
+            break;
+    }
+
+    exit;
+}
+
 $errores = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -1,6 +1,11 @@
 <?php
+require_once __DIR__ . '/../includes/auth.php';
+requireLogin();
+requireRole(['admin']);
+
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../libs/qr/generarQR.php';
+require_once __DIR__ . '/../includes/generarQR.php';
+
 
 $db = new Database();
 $conn = $db->getConnection();

@@ -2,9 +2,16 @@
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/config/database.php';
 
-// Solo empleados o admin
-if (!estaLogueado() || !in_array(getRolActual(), ['empleado', 'admin'])) {
+// Si no está logueado → login
+if (!estaLogueado()) {
+    $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
     header("Location: /login.php");
+    exit;
+}
+
+// Si está logueado pero NO es empleado ni admin → 403
+if (!in_array(getRolActual(), ['empleado', 'admin'])) {
+    header("Location: /403.php");
     exit;
 }
 

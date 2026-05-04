@@ -1,12 +1,9 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../config/database.php';
+requireLogin();
+requireRole(['auditor', 'admin']);
 
-// Solo auditores
-if (!estaLogueado() || getRolActual() !== 'auditor') {
-    header("Location: /login.php");
-    exit;
-}
+require_once __DIR__ . '/../config/database.php';
 
 $db = new Database();
 $conn = $db->getConnection();

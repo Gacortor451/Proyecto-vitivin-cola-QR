@@ -1,13 +1,11 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
+requireLogin();
+requireRole(['auditor', 'admin']);
+
 require_once __DIR__ . '/../config/database.php';
 
-// Solo auditores
-if (!estaLogueado() || getRolActual() !== 'auditor') {
-    header("Location: /login.php");
-    exit;
-}
-
+// Solo aceptar POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: /auditor/auditor.php");
     exit;

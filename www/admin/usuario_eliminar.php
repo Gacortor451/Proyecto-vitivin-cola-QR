@@ -1,12 +1,9 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../config/database.php';
+requireLogin();
+requireRole(['admin']);
 
-// Solo administradores
-if (!estaLogueado() || getRolActual() !== 'admin') {
-    header("Location: /login.php");
-    exit;
-}
+require_once __DIR__ . '/../config/database.php';
 
 $id = $_GET['id'] ?? null;
 
@@ -18,7 +15,7 @@ $db = new Database();
 $conn = $db->getConnection();
 
 // Evitar que un admin se elimine a sí mismo
-if ($id == ($_SESSION['usuario_id'] ?? null)) {
+if ($id == ($_SESSION['usuario'] ?? null)) {
     die("No puedes eliminar tu propio usuario.");
 }
 

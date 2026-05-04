@@ -17,6 +17,13 @@ if (!$id_lote) {
     exit;
 }
 
+// Si el usuario es empleado, redirigir al panel del personal
+if ($rol === 'empleado' && $id_lote) {
+    header("Location: /personal.php?id=" . $id_lote);
+    exit;
+}
+
+
 // Conexión BD
 $db = new Database();
 $conn = $db->getConnection();
