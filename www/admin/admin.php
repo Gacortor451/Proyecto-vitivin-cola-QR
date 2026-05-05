@@ -42,7 +42,6 @@ include __DIR__ . '/../includes/header.php';
 include __DIR__ . '/../includes/admin_topbar.php';
 ?>
 
-<!-- CONTENIDO -->
 <div class="admin-contenido">
 
     <h1 class="admin-titulo">Resumen del sistema</h1>

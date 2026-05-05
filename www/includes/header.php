@@ -2,7 +2,6 @@
 require_once __DIR__ . '/auth.php';
 
 $logueado = estaLogueado();
-$nombreUsuario = $logueado ? ($_SESSION['nombre'] ?? 'Usuario') : null;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -28,7 +27,6 @@ $nombreUsuario = $logueado ? ($_SESSION['nombre'] ?? 'Usuario') : null;
                 <a href="/login.php" class="btn-header">Iniciar sesión</a>
                 <a href="/registro.php" class="btn-header btn-secundario">Registrarse</a>
             <?php else: ?>
-                <span class="usuario-rol">Hola, <?php echo htmlspecialchars($nombreUsuario); ?></span>
                 <a href="/logout.php" class="btn-header btn-logout">Salir</a>
             <?php endif; ?>
         </div>

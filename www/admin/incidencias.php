@@ -54,7 +54,7 @@ include __DIR__ . '/../includes/admin_topbar.php';
                         <?php echo htmlspecialchars($inc['codigo_lote'] ?? ''); ?><br>
 
                         <strong>Fecha:</strong> 
-                        <?php echo htmlspecialchars($inc['fecha'] ?? ''); ?><br>
+                        <?php echo date("d/m/Y H:i", strtotime($inc['fecha'])); ?><br>
 
                         <strong>Creada por:</strong> 
                         <?php echo htmlspecialchars($inc['creador'] ?? ''); ?><br>
@@ -88,7 +88,7 @@ include __DIR__ . '/../includes/admin_topbar.php';
                         <?php echo htmlspecialchars($inc['codigo_lote'] ?? ''); ?><br>
 
                         <strong>Fecha:</strong> 
-                        <?php echo htmlspecialchars($inc['fecha'] ?? ''); ?><br>
+                        <?php echo date("d/m/Y H:i", strtotime($inc['fecha'])); ?><br>
 
                         <strong>Creada por:</strong> 
                         <?php echo htmlspecialchars($inc['creador'] ?? ''); ?><br>
