@@ -9,7 +9,7 @@ $rol = ucfirst(getRolActual());
 
     <footer class="footer">
         <div class="footer-inner">
-            <p class="footer-left">Hecho por: Gabriel</p>
+            <p class="footer-left">Hecho por: Gabriel Cordero del Toro</p>
             <p class="footer-right">Rol actual: <?php echo htmlspecialchars($rol); ?></p>
         </div>
     </footer>
