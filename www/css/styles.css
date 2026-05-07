@@ -88,8 +88,8 @@ body {
 .footer-inner {
     max-width: 1200px;
     margin: auto;
-    display: flex;               /* ← Alineación en fila */
-    justify-content: space-between; /* ← Izquierda / derecha */
+    display: flex;              
+    justify-content: space-between; 
     align-items: center;
     padding: 0 1rem;
 }
@@ -230,9 +230,9 @@ body {
     text-decoration: none;
 }
 
-/* ============================
+/* =======
    LOGIN
-   ============================ */
+   ======= */
 
 .login-contenedor {
     background: var(--blanco);
@@ -312,9 +312,10 @@ body {
     font-weight: 600;
     text-decoration: none;
 }
-/* ============================
+
+/* =======================
    PERFIL DE USUARIO
-   ============================ */
+   ======================= */
 
 .perfil-contenedor {
     background: var(--blanco);
@@ -474,9 +475,9 @@ body {
     opacity: 0.9;
 }
 
-/* ============================================
-   PANEL DEL PERSONAL — ESTILO PROFESIONAL
-   ============================================ */
+/* ====================
+   PANEL DEL PERSONAL
+   ==================== */
 
 .personal-contenedor {
     max-width: 900px;
@@ -515,9 +516,9 @@ body {
     transform: translateY(-2px);
 }
 
-/* ============================================
+/* ===================================
    FORMULARIO DE AÑADIR TRAZABILIDAD
-   ============================================ */
+   =================================== */
 
 .personal-lote-contenedor {
     max-width: 900px;
@@ -630,9 +631,9 @@ body {
     border-color: #ddd;
 }
 
-/* ============================================
+/* ==============================
    TRAZABILIDAD DEL EMPLEADO
-   ============================================ */
+   ==============================*/
 
 .personal-trazabilidad h2 {
     color: var(--burdeos);
@@ -651,20 +652,16 @@ body {
    TEXTAREAS RESPONSIVE (empleado y comentarios)
    ============================================ */
 
-/* ============================================
-   TEXTAREA CONTROLADO (RESPONSIVE Y PROFESIONAL)
-   ============================================ */
-
 .textarea-control {
     width: 100%;
     max-width: 100%;
     min-height: 120px;
-    max-height: 280px; /* evita que se salga de la pantalla */
+    max-height: 280px; 
     padding: 0.9rem;
     border-radius: 8px;
     border: 1px solid #ccc;
-    resize: vertical; /* solo permite crecer hacia abajo */
-    overflow-y: auto; /* scroll interno si se llena */
+    resize: vertical; 
+    overflow-y: auto; 
     font-family: var(--fuente-base);
     font-size: 0.95rem;
     line-height: 1.45;
@@ -678,9 +675,9 @@ body {
     box-shadow: 0 0 0 2px rgba(122, 31, 42, 0.15);
 }
 
-/* ============================================
+/* =========================
    VISTA AUDITOR
-   ============================================ */
+   ========================= */
 
 .auditor-contenedor {
     max-width: 900px;
@@ -768,9 +765,9 @@ body {
     font-size: 0.85rem;
     color: #666;
 }
-/* ============================================
+/* ===========================
    AUDITOR — VISTA DEL LOTE
-   ============================================ */
+   =========================== */
 
 .auditor-lote-contenedor {
     max-width: 900px;
@@ -854,9 +851,9 @@ body {
 }
 
 
-/* ============================
-   ADMIN — TOP NAV (NUEVO)
-   ============================ */
+/* ==================
+   ADMIN — TOP NAV 
+   ================== */
 
 .admin-topbar {
     width: 100%;
@@ -886,18 +883,14 @@ body {
     background: #8b0000;
 }
 
-/* ============================
+/* ===================
    ADMIN — CONTENIDO
-   ============================ */
+   ===================*/
 
 .admin-contenido {
     padding: 2rem;
     width: 100%;
 }
-
-/* ============================
-   RESTO DE TU CSS (SIN CAMBIOS)
-   ============================ */
 
 .admin-titulo {
     color: var(--burdeos);
@@ -1104,12 +1097,12 @@ body {
     color: white;
     font-size: 0.9rem;
     display: inline-block;
-    margin: 0.1rem 0.1rem; /* NUEVO: separación mínima */
+    margin: 0.1rem 0.1rem; 
 }
 
 @media (max-width: 768px) {
 
-    /* La tabla se hace más scrolleable horizontalmente */
+    /* La tabla se hace scrolleable horizontalmente */
     .admin-tabla {
         display: block;
         width: 100%;
@@ -1130,9 +1123,9 @@ body {
         padding: 0.5rem 0.6rem;
     }
 }
-/* ============================
+/* =================
    404 PÚBLICO
-============================ */
+==================== */
 
 .error-404-contenedor {
     display: flex;
