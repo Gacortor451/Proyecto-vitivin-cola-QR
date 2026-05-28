@@ -21,7 +21,6 @@ if (!$id_lote) {
     die("Lote no especificado.");
 }
 
-
 $db = new Database();
 $conn = $db->getConnection();
 
@@ -35,6 +34,8 @@ if (!$lote) {
 }
 
 // Procesar formulario
+$errores = [];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $tipo = trim($_POST['tipo_evento']);
@@ -44,7 +45,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $deposito = $_POST['id_deposito'] ?: null;
     $partida = $_POST['id_partida'] ?: null;
 
-    if ($tipo !== '' && $fecha !== '') {
+    // Función para validar existencia de claves foráneas
+    function existe($conn, $tabla, $id) {
+        $stmt = $conn->prepare("SELECT id FROM $tabla WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch() !== false;
+    }
+
+    // Validar claves foráneas solo si se envían
+    if ($barrica !== null && !existe($conn, 'barricas', $barrica)) {
+        $errores[] = "La barrica con ID $barrica no existe.";
+    }
+
+    if ($deposito !== null && !existe($conn, 'depositos', $deposito)) {
+        $errores[] = "El depósito con ID $deposito no existe.";
+    }
+
+    if ($partida !== null && !existe($conn, 'partidas', $partida)) {
+        $errores[] = "La partida con ID $partida no existe.";
+    }
+
+    // Validación básica
+    if ($tipo === '' || $fecha === '') {
+        $errores[] = "El tipo de evento y la fecha son obligatorios.";
+    }
+
+    // Si no hay errores → insertar
+    if (empty($errores)) {
 
         $stmt = $conn->prepare("
             INSERT INTO trazabilidad 
@@ -63,7 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':partida' => $partida
         ]);
 
-        header("Location: personal_lote.php?id=" . $id_lote);
+        // Redirigir al panel del empleado
+        header("Location: /personal.php");
         exit;
     }
 }
@@ -82,6 +110,12 @@ $trazabilidad = $stmt->fetchAll();
 
 <div class="personal-lote-contenedor">
 
+    <!-- BOTÓN VOLVER AL PANEL -->
+    <a href="/personal.php"
+       style="display:inline-block; margin-bottom:15px; padding:8px 12px; background:#ddd; border-radius:4px; text-decoration:none; color:#333;">
+        ← Volver al panel
+    </a>
+
     <h1 class="personal-titulo">
         Añadir información al lote: <?php echo htmlspecialchars($lote['codigo_lote']); ?>
     </h1>
@@ -89,6 +123,16 @@ $trazabilidad = $stmt->fetchAll();
     <section class="personal-formulario">
 
         <h2>Añadir evento de trazabilidad</h2>
+
+        <!-- Mostrar errores -->
+        <?php if (!empty($errores)): ?>
+            <div style="background:#ffe5e5; border-left:5px solid #ff4d4d; padding:12px; margin-bottom:20px; color:#b30000; font-weight:bold;">
+                Se han encontrado errores:<br>
+                <?php foreach ($errores as $e): ?>
+                    • <?php echo htmlspecialchars($e); ?><br>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
 
         <form method="POST" class="form-evento">
 

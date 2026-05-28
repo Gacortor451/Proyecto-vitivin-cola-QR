@@ -18,15 +18,32 @@ if (!in_array(getRolActual(), ['empleado', 'admin'])) {
 $db = new Database();
 $conn = $db->getConnection();
 
-
-// Si viene un lote escaneado por QR
+// 1) Intentar obtener lote desde GET (QR o enlaces internos)
 $id_lote = $_GET['id'] ?? null;
+
+// 2) Si no viene por GET, intentar restaurarlo desde sesión
+if (!$id_lote && isset($_SESSION['ultimo_lote'])) {
+    $id_lote = $_SESSION['ultimo_lote'];
+}
+
+// 3) Si tampoco está en sesión, intentar restaurarlo desde cookie
+if (!$id_lote && !empty($_COOKIE['ultimo_lote'])) {
+    $id_lote = $_COOKIE['ultimo_lote'];
+    $_SESSION['ultimo_lote'] = $id_lote; // restaurar en sesión
+}
+
 $lote = null;
 
+// 4) Si tenemos un ID válido, cargar el lote
 if ($id_lote) {
     $stmt = $conn->prepare("SELECT id, codigo_lote FROM lotes WHERE id = :id");
     $stmt->execute([':id' => $id_lote]);
     $lote = $stmt->fetch();
+
+    // Si existe, guardar en sesión para mantenerlo siempre
+    if ($lote) {
+        $_SESSION['ultimo_lote'] = $id_lote;
+    }
 }
 
 include __DIR__ . '/includes/header.php';
@@ -48,7 +65,7 @@ include __DIR__ . '/includes/header.php';
     <hr>
 
     <?php if ($lote): ?>
-        <h2 class="personal-subtitulo">Lote escaneado</h2>
+        <h2 class="personal-subtitulo">Lote seleccionado</h2>
 
         <ul class="personal-lista-lotes">
             <li>
@@ -64,7 +81,7 @@ include __DIR__ . '/includes/header.php';
 
     <?php else: ?>
         <p class="personal-subtitulo">
-            No se ha escaneado ningún lote todavía.
+            No se ha seleccionado ningún lote todavía.
         </p>
     <?php endif; ?>
 

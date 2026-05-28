@@ -12,6 +12,11 @@ $rol = getRolActual();
 // Obtener ID del lote desde la URL
 $id_lote = $_GET['id'] ?? null;
 
+// Guardar el último lote visitado en sesión
+if (!empty($id_lote)) {
+    $_SESSION['ultimo_lote'] = $id_lote;
+}
+
 if (!$id_lote) {
     header("Location: /404.php");
     exit;
@@ -22,7 +27,6 @@ if ($rol === 'empleado' && $id_lote) {
     header("Location: /personal.php?id=" . $id_lote);
     exit;
 }
-
 
 // Conexión BD
 $db = new Database();
@@ -157,55 +161,54 @@ $trazabilidad = $stmt->fetchAll();
             <?php echo nl2br(htmlspecialchars($lote['descripcion'] ?? '')); ?>
         </p>
 
-<div class="lote-datos">
+        <div class="lote-datos">
 
-    <p><strong>Variedad de uva:</strong> 
-        <?php echo $lote['variedad_uva'] ?: 'No especificado'; ?>
-    </p>
+            <p><strong>Variedad de uva:</strong> 
+                <?php echo $lote['variedad_uva'] ?: 'No especificado'; ?>
+            </p>
 
-    <p><strong>Fecha de cosecha:</strong> 
-        <?php echo $lote['fecha_cosecha'] ?: 'No especificado'; ?>
-    </p>
+            <p><strong>Fecha de cosecha:</strong> 
+                <?php echo $lote['fecha_cosecha'] ?: 'No especificado'; ?>
+            </p>
 
-    <p><strong>Bodega:</strong> 
-        <?php echo $lote['bodega'] ?: 'No especificado'; ?>
-    </p>
+            <p><strong>Bodega:</strong> 
+                <?php echo $lote['bodega'] ?: 'No especificado'; ?>
+            </p>
 
-    <p><strong>Nombre del producto:</strong> 
-        <?php echo $lote['nombre_producto'] ?: 'No especificado'; ?>
-    </p>
+            <p><strong>Nombre del producto:</strong> 
+                <?php echo $lote['nombre_producto'] ?: 'No especificado'; ?>
+            </p>
 
-    <p><strong>Fecha de producción:</strong> 
-        <?php echo $lote['fecha_produccion'] ?: 'No especificado'; ?>
-    </p>
+            <p><strong>Fecha de producción:</strong> 
+                <?php echo $lote['fecha_produccion'] ?: 'No especificado'; ?>
+            </p>
 
-    <p><strong>Graduación alcohólica:</strong> 
-        <?php echo $lote['graduacion_alcoholica'] ?: 'No especificado'; ?>
-    </p>
+            <p><strong>Graduación alcohólica:</strong> 
+                <?php echo $lote['graduacion_alcoholica'] ?: 'No especificado'; ?>
+            </p>
 
-    <p><strong>Acidez:</strong> 
-        <?php echo $lote['acidez'] ?: 'No especificado'; ?>
-    </p>
+            <p><strong>Acidez:</strong> 
+                <?php echo $lote['acidez'] ?: 'No especificado'; ?>
+            </p>
 
-    <p><strong>pH:</strong> 
-        <?php echo $lote['ph'] ?: 'No especificado'; ?>
-    </p>
+            <p><strong>pH:</strong> 
+                <?php echo $lote['ph'] ?: 'No especificado'; ?>
+            </p>
 
-    <p><strong>Sulfuroso total:</strong> 
-        <?php echo $lote['sulfuroso_total'] ?: 'No especificado'; ?>
-    </p>
+            <p><strong>Sulfuroso total:</strong> 
+                <?php echo $lote['sulfuroso_total'] ?: 'No especificado'; ?>
+            </p>
 
-</div>
-
+        </div>
 
         <div class="lote-likes">
-            ❤️ <?php echo $likes; ?> likes
+            ❤️ <?php echo $likes; ?> me gusta
         </div>
 
         <?php if ($logueado): ?>
             <form method="POST" class="like-form">
                 <button type="submit" name="like" class="btn-like">
-                    <?php echo $yaLike ? "💔 Quitar like" : "❤️ Me gusta"; ?>
+                    <?php echo $yaLike ? "💔 Quitar me gusta" : "❤️ Me gusta"; ?>
                 </button>
             </form>
         <?php else: ?>
@@ -225,7 +228,14 @@ $trazabilidad = $stmt->fetchAll();
                     <li>
                         <div class="timeline-etapa">
                             <h3><?php echo htmlspecialchars($evento['tipo_evento']); ?></h3>
-                            <p><strong>Fecha:</strong> <?php echo $evento['fecha']; ?></p>
+
+                            <?php 
+                                // Formatear fecha sin hora
+                                $fechaFormateada = date("d/m/Y", strtotime($evento['fecha']));
+                            ?>
+
+                            <p><strong>Fecha:</strong> <?php echo $fechaFormateada; ?></p>
+
                             <?php if ($evento['descripcion']): ?>
                                 <p><?php echo nl2br(htmlspecialchars($evento['descripcion'])); ?></p>
                             <?php endif; ?>
@@ -247,8 +257,8 @@ $trazabilidad = $stmt->fetchAll();
                     <span class="comentario-fecha">
                         <?php echo date("d/m/Y H:i", strtotime($c['fecha'])); ?>
                     </span>
-
                 </header>
+
                 <p class="comentario-texto">
                     <?php echo nl2br(htmlspecialchars($c['texto'])); ?>
                 </p>

@@ -16,68 +16,99 @@ if (!in_array(getRolActual(), ['empleado', 'admin'])) {
     exit;
 }
 
-
 $db = new Database();
 $conn = $db->getConnection();
 
-// Procesar formulario
+$errores = [];
+
+// Función para limpiar fechas vacías
+function limpiarFecha($valor) {
+    return ($valor === '' || $valor === null) ? null : $valor;
+}
+
+// Función para limpiar números vacíos
+function limpiarNumero($valor) {
+    return ($valor === '' || $valor === null) ? null : $valor;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $codigo_lote = trim($_POST['codigo_lote']);
     $variedad_uva = trim($_POST['variedad_uva']);
-    $fecha_cosecha = $_POST['fecha_cosecha'];
+    $fecha_cosecha = limpiarFecha($_POST['fecha_cosecha']);
     $bodega = trim($_POST['bodega']);
     $descripcion = trim($_POST['descripcion']);
     $nombre_producto = trim($_POST['nombre_producto']);
-    $fecha_produccion = $_POST['fecha_produccion'];
-    $graduacion_alcoholica = $_POST['graduacion_alcoholica'];
-    $acidez = $_POST['acidez'];
-    $ph = $_POST['ph'];
-    $sulfuroso_total = $_POST['sulfuroso_total'];
+    $fecha_produccion = limpiarFecha($_POST['fecha_produccion']);
+    $graduacion_alcoholica = limpiarNumero($_POST['graduacion_alcoholica']);
+    $acidez = limpiarNumero($_POST['acidez']);
+    $ph = limpiarNumero($_POST['ph']);
+    $sulfuroso_total = limpiarNumero($_POST['sulfuroso_total']);
 
-    // Insertar lote en PostgreSQL
-    $sql = "
-        INSERT INTO lotes 
-        (codigo_lote, variedad_uva, fecha_cosecha, bodega, descripcion, 
-         nombre_producto, fecha_produccion, graduacion_alcoholica, acidez, ph, sulfuroso_total, 
-         fecha_creacion, fecha_actualizacion)
-        VALUES 
-        (:codigo_lote, :variedad_uva, :fecha_cosecha, :bodega, :descripcion,
-         :nombre_producto, :fecha_produccion, :graduacion_alcoholica, :acidez, :ph, :sulfuroso_total,
-         NOW(), NOW())
-        RETURNING id
-    ";
+    // Validación básica
+    if ($codigo_lote === '') $errores[] = "El código del lote es obligatorio.";
+    if ($variedad_uva === '') $errores[] = "La variedad de uva es obligatoria.";
+    if ($bodega === '') $errores[] = "La bodega es obligatoria.";
 
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([
-        ':codigo_lote' => $codigo_lote,
-        ':variedad_uva' => $variedad_uva,
-        ':fecha_cosecha' => $fecha_cosecha,
-        ':bodega' => $bodega,
-        ':descripcion' => $descripcion,
-        ':nombre_producto' => $nombre_producto,
-        ':fecha_produccion' => $fecha_produccion,
-        ':graduacion_alcoholica' => $graduacion_alcoholica,
-        ':acidez' => $acidez,
-        ':ph' => $ph,
-        ':sulfuroso_total' => $sulfuroso_total
-    ]);
+    if (empty($errores)) {
 
-    $idLote = $stmt->fetchColumn();
+        try {
 
-    // Generar QR automáticamente
-    $rutaQR = generarQRlote($idLote);
+            $sql = "
+                INSERT INTO lotes 
+                (codigo_lote, variedad_uva, fecha_cosecha, bodega, descripcion, 
+                 nombre_producto, fecha_produccion, graduacion_alcoholica, acidez, ph, sulfuroso_total,
+                 fecha_creacion, fecha_actualizacion)
+                VALUES 
+                (:codigo_lote, :variedad_uva, :fecha_cosecha, :bodega, :descripcion,
+                 :nombre_producto, :fecha_produccion, :graduacion_alcoholica, :acidez, :ph, :sulfuroso_total,
+                 NOW(), NOW())
+                RETURNING id
+            ";
 
-    // Guardar ruta del QR en la BD
-    $stmt = $conn->prepare("UPDATE lotes SET qr_url = :qr WHERE id = :id");
-    $stmt->execute([
-        ':qr' => $rutaQR,
-        ':id' => $idLote
-    ]);
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([
+                ':codigo_lote' => $codigo_lote,
+                ':variedad_uva' => $variedad_uva,
+                ':fecha_cosecha' => $fecha_cosecha,
+                ':bodega' => $bodega,
+                ':descripcion' => $descripcion,
+                ':nombre_producto' => $nombre_producto,
+                ':fecha_produccion' => $fecha_produccion,
+                ':graduacion_alcoholica' => $graduacion_alcoholica,
+                ':acidez' => $acidez,
+                ':ph' => $ph,
+                ':sulfuroso_total' => $sulfuroso_total
+            ]);
 
-    header("Location: /personal.php?creado=1");
-    exit;
+            $idLote = $stmt->fetchColumn();
+
+            // Generar QR automáticamente
+            $rutaQR = generarQRlote($idLote);
+
+            $stmt = $conn->prepare("UPDATE lotes SET qr_url = :qr WHERE id = :id");
+            $stmt->execute([
+                ':qr' => $rutaQR,
+                ':id' => $idLote
+            ]);
+
+            $_SESSION['ultimo_lote'] = $idLote;
+
+            header("Location: /personal.php?creado=1");
+            exit;
+
+        } catch (PDOException $e) {
+
+            // Código de error UNIQUE VIOLATION en PostgreSQL
+            if ($e->getCode() === '23505') {
+                $errores[] = "El código de lote $codigo_lote ya existe. Introduce uno diferente.";
+            } else {
+                throw $e; // Re-lanzar si es otro error
+            }
+        }
+    }
 }
+
 
 ?>
 
@@ -85,7 +116,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="personal-editar-contenedor">
 
+    <!-- BOTÓN VOLVER AL PANEL -->
+    <a href="/personal.php"
+       style="display:inline-block; margin-bottom:15px; padding:8px 12px; background:#ddd; border-radius:4px; text-decoration:none; color:#333;">
+        ← Volver al panel
+    </a>
+
     <h1 class="personal-titulo">Crear nuevo lote</h1>
+
+    <?php if (!empty($errores)): ?>
+        <div style="background:#ffe5e5; border-left:5px solid #ff4d4d; padding:12px; margin-bottom:20px; color:#b30000; font-weight:bold;">
+            Se han encontrado errores:<br>
+            <?php foreach ($errores as $e): ?>
+                • <?php echo htmlspecialchars($e); ?><br>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 
     <form method="POST" class="form-editar-lote">
 
@@ -96,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="text" name="variedad_uva" required>
 
         <label>Fecha de cosecha</label>
-        <input type="date" name="fecha_cosecha" required>
+        <input type="date" name="fecha_cosecha">
 
         <label>Bodega</label>
         <input type="text" name="bodega" required>

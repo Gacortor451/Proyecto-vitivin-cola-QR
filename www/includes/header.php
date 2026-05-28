@@ -2,6 +2,12 @@
 require_once __DIR__ . '/auth.php';
 
 $logueado = estaLogueado();
+
+// Detectar si estamos en lote.php y si hay un ID
+$id_lote = null;
+if (isset($_GET['id']) && basename($_SERVER['PHP_SELF']) === 'lote.php') {
+    $id_lote = intval($_GET['id']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -27,7 +33,15 @@ $logueado = estaLogueado();
                 <a href="/login.php" class="btn-header">Iniciar sesión</a>
                 <a href="/registro.php" class="btn-header btn-secundario">Registrarse</a>
             <?php else: ?>
-                <a href="/logout.php" class="btn-header btn-logout">Salir</a>
+
+                <?php if ($id_lote): ?>
+                    <!-- Logout con ID del lote -->
+                    <a href="/logout.php?id=<?php echo $id_lote; ?>" class="btn-header btn-logout">Salir</a>
+                <?php else: ?>
+                    <!-- Logout normal -->
+                    <a href="/logout.php" class="btn-header btn-logout">Salir</a>
+                <?php endif; ?>
+
             <?php endif; ?>
         </div>
 

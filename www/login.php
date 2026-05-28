@@ -4,6 +4,14 @@ require_once __DIR__ . '/config/database.php';
 
 $errores = [];
 
+/**
+ * 1) Guardamos la cookie del último lote (QR)
+ */
+if (!empty($_COOKIE['ultimo_lote'])) {
+    $_SESSION['redirect_after_login'] = "/lote.php?id=" . $_COOKIE['ultimo_lote'];
+    setcookie('ultimo_lote', '', time() - 3600, "/");
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $email = trim($_POST['email'] ?? '');
@@ -30,20 +38,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Obtener rol
             $stmt = $conn->prepare("SELECT nombre FROM roles WHERE id = :id");
             $stmt->execute([':id' => $usuario['id_rol']]);
-            $rol = $stmt->fetchColumn();
+            $rol = strtolower($stmt->fetchColumn());
 
-            $_SESSION['rol'] = strtolower($rol);
+            $_SESSION['rol'] = $rol;
 
-            // Redirección inteligente (si venía de una página protegida)
-            if ($_SESSION['rol'] !== 'admin' && !empty($_SESSION['redirect_after_login'])) {
-                $destino = $_SESSION['redirect_after_login'];
-                unset($_SESSION['redirect_after_login']);
-                header("Location: " . $destino);
-                exit;
+            /**
+             * 2) Redirección del QR
+             *    Empleado y usuario → lote
+             *    Auditor y admin → NO lote (pero NO borran el ID)
+             */
+            if (!empty($_SESSION['redirect_after_login'])) {
+
+                if (in_array($rol, ['empleado', 'usuario'])) {
+                    $destino = $_SESSION['redirect_after_login'];
+                    unset($_SESSION['redirect_after_login']);
+                    header("Location: " . $destino);
+                    exit;
+                }
+
+                // Auditor y admin ignoran el QR, pero NO lo borran
             }
 
-            // Redirección según rol
-            switch ($_SESSION['rol']) {
+            /**
+             * 3) Redirección por rol
+             */
+            switch ($rol) {
 
                 case 'admin':
                     header("Location: /admin/admin.php");
@@ -58,9 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     break;
 
                 case 'usuario':
-                    header("Location: /lote.php");
-                    break;
-
                 default:
                     header("Location: /index.php");
                     break;

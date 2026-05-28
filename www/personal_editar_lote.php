@@ -36,39 +36,74 @@ if (!$lote) {
 // Procesar formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $campos = [
-        'variedad_uva',
-        'fecha_cosecha',
-        'bodega',
-        'descripcion',
-        'nombre_producto',
-        'fecha_produccion',
-        'graduacion_alcoholica',
-        'acidez',
-        'ph',
-        'sulfuroso_total'
-    ];
+    $errores = [];
 
-    $updates = [];
-    $params = [':id' => $id_lote];
+    function validarNumero($valor, $campo) {
+        if ($valor === '' || $valor === null) return null;
+        if (!is_numeric($valor)) return "El campo $campo debe ser un número válido.";
+        return null;
+    }
 
-    foreach ($campos as $campo) {
-        if ($lote[$campo] === null || $lote[$campo] === '' || $lote[$campo] === 'No especificado') {
-            if (!empty($_POST[$campo])) {
-                $updates[] = "$campo = :$campo";
-                $params[":$campo"] = $_POST[$campo];
+    // Validar SOLO si el campo existe en POST
+    if (isset($_POST['graduacion_alcoholica'])) {
+        if ($error = validarNumero($_POST['graduacion_alcoholica'], "Graduación alcohólica")) $errores[] = $error;
+    }
+
+    if (isset($_POST['acidez'])) {
+        if ($error = validarNumero($_POST['acidez'], "Acidez")) $errores[] = $error;
+    }
+
+    if (isset($_POST['ph'])) {
+        if ($error = validarNumero($_POST['ph'], "pH")) $errores[] = $error;
+    }
+
+    if (isset($_POST['sulfuroso_total'])) {
+        if ($error = validarNumero($_POST['sulfuroso_total'], "Sulfuroso total")) $errores[] = $error;
+    }
+
+    if (empty($errores)) {
+
+        $campos = [
+            'variedad_uva',
+            'fecha_cosecha',
+            'bodega',
+            'descripcion',
+            'nombre_producto',
+            'fecha_produccion',
+            'graduacion_alcoholica',
+            'acidez',
+            'ph',
+            'sulfuroso_total'
+        ];
+
+        $updates = [];
+        $params = [':id' => $id_lote];
+
+        foreach ($campos as $campo) {
+
+            // Solo actualizar si el campo era editable
+            if ($lote[$campo] === null || $lote[$campo] === '' || $lote[$campo] === 'No especificado') {
+
+                // Y solo si el usuario lo envió
+                if (isset($_POST[$campo]) && $_POST[$campo] !== '') {
+                    $updates[] = "$campo = :$campo";
+                    $params[":$campo"] = $_POST[$campo];
+                }
             }
         }
-    }
 
-    if (!empty($updates)) {
-        $sql = "UPDATE lotes SET " . implode(", ", $updates) . ", fecha_actualizacion = NOW() WHERE id = :id";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute($params);
-    }
+        if (!empty($updates)) {
+            $sql = "UPDATE lotes SET " . implode(", ", $updates) . ", fecha_actualizacion = NOW() WHERE id = :id";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute($params);
+        }
 
-    header("Location: personal_editar_lote.php?id=" . $id_lote);
-    exit;
+        // Mantener el ID del lote
+        $_SESSION['ultimo_lote'] = $id_lote;
+
+        header("Location: /personal.php");
+        exit;
+    }
 }
 ?>
 
@@ -76,9 +111,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="personal-editar-contenedor">
 
+    <!-- BOTÓN VOLVER AL PANEL -->
+    <a href="/personal.php"
+       style="display:inline-block; margin-bottom:15px; padding:8px 12px; background:#ddd; border-radius:4px; text-decoration:none; color:#333;">
+        ← Volver al panel
+    </a>
+
     <h1 class="personal-titulo">
         Completar información del lote: <?php echo htmlspecialchars($lote['codigo_lote']); ?>
     </h1>
+
+    <?php if (!empty($errores)): ?>
+        <div style="background:#ffe5e5; border-left:5px solid #ff4d4d; padding:12px; margin-bottom:20px; color:#b30000; font-weight:bold;>
+            <strong>Se han encontrado errores:</strong><br>
+            <?php foreach ($errores as $e): ?>
+                • <?php echo htmlspecialchars($e); ?><br>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 
     <form method="POST" class="form-editar-lote">
 
@@ -103,20 +153,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <label><?php echo $label; ?></label>
 
-<?php if ($editable): ?>
+            <?php if ($editable): ?>
 
-    <?php if ($campo === 'fecha_cosecha' || $campo === 'fecha_produccion'): ?>
-        <input type="date" name="<?php echo $campo; ?>">
-    <?php else: ?>
-        <input type="text" name="<?php echo $campo; ?>" placeholder="Añadir información">
-    <?php endif; ?>
+                <?php if ($campo === 'fecha_cosecha' || $campo === 'fecha_produccion'): ?>
+                    <input type="date" name="<?php echo $campo; ?>">
+                <?php else: ?>
+                    <input type="text" name="<?php echo $campo; ?>" placeholder="Añadir información">
+                <?php endif; ?>
 
-<?php else: ?>
+            <?php else: ?>
 
-    <input type="text" value="<?php echo htmlspecialchars($valor); ?>" disabled>
+                <input type="text" value="<?php echo htmlspecialchars($valor); ?>" disabled>
 
-<?php endif; ?>
-
+            <?php endif; ?>
 
         <?php endforeach; ?>
 

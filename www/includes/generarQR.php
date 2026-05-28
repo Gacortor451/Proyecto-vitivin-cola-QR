@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../phpqrcode/qrlib.php';
+require_once __DIR__ . '/../libs/phpqrcode/qrlib.php';
 
 function generarQRlote($idLote) {
 
