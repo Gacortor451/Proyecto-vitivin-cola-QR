@@ -6,25 +6,33 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 /*
- * Guardar ID del lote en cookie si existe en sesión
- * Esto permite recordar el lote aunque el usuario ya no esté en lote.php
+ * 1) Guardar SIEMPRE el ID del lote en cookie si existe en sesión
+ *    Esto evita que auditor/admin borren el ID del QR
  */
 if (!empty($_SESSION['ultimo_lote'])) {
     setcookie('ultimo_lote', $_SESSION['ultimo_lote'], time() + 300, "/");
 }
 
 /*
- * Eliminar variables de sesión
+ * 2) Guardar también redirect_after_login si existe
+ *    (por si el usuario venía de un QR)
+ */
+if (!empty($_SESSION['redirect_after_login'])) {
+    setcookie('redirect_after_login', $_SESSION['redirect_after_login'], time() + 300, "/");
+}
+
+/*
+ * 3) Eliminar variables de sesión
  */
 $_SESSION = [];
 
 /*
- * Destruir la sesión
+ * 4) Destruir la sesión
  */
 session_destroy();
 
 /*
- * Eliminar cookie de sesión
+ * 5) Eliminar cookie de sesión
  */
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
@@ -35,7 +43,7 @@ if (ini_get("session.use_cookies")) {
 }
 
 /*
- * Redirigir al login
+ * 6) Redirigir al login
  */
 header("Location: /login.php");
 exit;

@@ -5,6 +5,15 @@ require_once __DIR__ . '/config/database.php';
 $errores = [];
 
 /**
+ * 0) Recuperar redirect_after_login desde cookie si existe
+ *    (logout.php la guarda cuando auditor/admin cierran sesión)
+ */
+if (empty($_SESSION['redirect_after_login']) && !empty($_COOKIE['redirect_after_login'])) {
+    $_SESSION['redirect_after_login'] = $_COOKIE['redirect_after_login'];
+    setcookie('redirect_after_login', '', time() - 3600, "/");
+}
+
+/**
  * 1) Guardamos la cookie del último lote (QR)
  */
 if (!empty($_COOKIE['ultimo_lote'])) {

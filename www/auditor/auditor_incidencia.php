@@ -5,6 +5,9 @@ requireRole(['auditor', 'admin']);
 
 require_once __DIR__ . '/../config/database.php';
 
+// El auditor NO debe guardar ultimo_lote
+unset($_SESSION['ultimo_lote']);
+
 // Solo aceptar POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: /auditor/auditor.php");

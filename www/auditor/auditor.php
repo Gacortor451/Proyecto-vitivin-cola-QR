@@ -5,11 +5,34 @@ requireRole(['auditor', 'admin']);
 
 require_once __DIR__ . '/../config/database.php';
 
+/* ============================================================
+   PROTECCIÓN DEL FLUJO DEL QR
+   ============================================================ */
+
+// El auditor NO debe guardar ultimo_lote
+unset($_SESSION['ultimo_lote']);
+
+// No sobrescribir redirect_after_login si viene de un QR
+if (!empty($_SESSION['redirect_after_login']) && str_contains($_SESSION['redirect_after_login'], 'lote.php')) {
+    // Mantener el QR
+} else {
+    // Auditor puede navegar sin afectar al QR
+    $_SESSION['redirect_after_login'] = null;
+}
+
+/* ============================================================
+   CONEXIÓN BD
+   ============================================================ */
+
 $db = new Database();
 $conn = $db->getConnection();
 
 $resultados = [];
 $busqueda = trim($_GET['q'] ?? '');
+
+/* ============================================================
+   BÚSQUEDA DE LOTES
+   ============================================================ */
 
 if ($busqueda !== '') {
 
