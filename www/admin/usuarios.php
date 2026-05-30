@@ -21,10 +21,15 @@ include __DIR__ . '/../includes/header.php';
 include __DIR__ . '/../includes/admin_topbar.php';
 ?>
 
-<!-- CONTENIDO -->
 <div class="admin-contenido">
 
     <h1 class="admin-titulo">Gestión de Usuarios</h1>
+
+    <?php if (isset($_GET['eliminado'])): ?>
+        <div class="admin-alerta-exito">
+            ✔ Usuario eliminado correctamente
+        </div>
+    <?php endif; ?>
 
     <a href="/admin/usuario_nuevo.php" class="admin-btn-crear">+ Crear usuario</a>
 
@@ -43,19 +48,25 @@ include __DIR__ . '/../includes/admin_topbar.php';
             <?php foreach ($usuarios as $u): ?>
                 <tr>
                     <td><?php echo $u['id']; ?></td>
-                    <td><?php echo htmlspecialchars($u['nombre'] ?? ''); ?></td>
-                    <td><?php echo htmlspecialchars($u['email'] ?? ''); ?></td>
-                    <td><?php echo htmlspecialchars($u['rol'] ?? ''); ?></td>
+                    <td><?php echo htmlspecialchars($u['nombre']); ?></td>
+                    <td><?php echo htmlspecialchars($u['email']); ?></td>
+                    <td><?php echo htmlspecialchars($u['rol']); ?></td>
 
                     <td>
                         <a href="/admin/usuario_editar.php?id=<?php echo $u['id']; ?>" 
                            class="admin-btn-tabla editar">Editar rol</a>
 
-                        <a href="/admin/usuario_eliminar.php?id=<?php echo $u['id']; ?>" 
-                           class="admin-btn-tabla eliminar"
-                           onclick="return confirm('¿Seguro que deseas eliminar este usuario?');">
-                           Eliminar
-                        </a>
+                        <?php if ($u['id'] != ($_SESSION['usuario'] ?? null)): ?>
+                            <a href="/admin/usuario_eliminar.php?id=<?php echo $u['id']; ?>" 
+                               class="admin-btn-tabla eliminar"
+                               onclick="return confirm('¿Seguro que deseas eliminar este usuario?');">
+                               Eliminar
+                            </a>
+                        <?php else: ?>
+                            <span class="admin-btn-tabla deshabilitado" title="No puedes eliminar tu propio usuario">
+                                No disponible
+                            </span>
+                        <?php endif; ?>
                     </td>
                 </tr>
             <?php endforeach; ?>

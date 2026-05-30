@@ -5,9 +5,9 @@ requireRole(['admin']);
 
 require_once __DIR__ . '/../config/database.php';
 
-$id = $_GET['id'] ?? null;
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-if (!$id) {
+if ($id <= 0) {
     die("Usuario no especificado.");
 }
 
@@ -27,7 +27,7 @@ if ($stmt->fetchColumn() == 0) {
     die("El usuario no existe.");
 }
 
-// Eliminar usuario
+// Eliminar usuario (las FK ya gestionan likes, comentarios, incidencias, etc.)
 $stmt = $conn->prepare("DELETE FROM usuarios WHERE id = :id");
 $stmt->execute([':id' => $id]);
 

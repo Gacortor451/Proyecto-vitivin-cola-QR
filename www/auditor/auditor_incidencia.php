@@ -14,10 +14,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$id_lote = $_POST['id_lote'] ?? null;
+// Asegurar que id_lote SIEMPRE sea un entero válido
+$id_lote = isset($_POST['id_lote']) ? intval($_POST['id_lote']) : 0;
 $descripcion = trim($_POST['descripcion'] ?? '');
 
-if (!$id_lote || $descripcion === '') {
+// Validación segura
+if ($id_lote <= 0 || $descripcion === '') {
     die("Datos incompletos para crear la incidencia.");
 }
 

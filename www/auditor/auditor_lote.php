@@ -5,9 +5,9 @@ requireRole(['auditor', 'admin']);
 
 require_once __DIR__ . '/../config/database.php';
 
-// =====================================
-// PROTECCIÓN DEL FLUJO DEL QR
-// =====================================
+/* ============================================================
+   PROTECCIÓN DEL FLUJO DEL QR
+   ============================================================ */
 
 // El auditor NO debe guardar ultimo_lote
 unset($_SESSION['ultimo_lote']);
@@ -16,25 +16,26 @@ unset($_SESSION['ultimo_lote']);
 if (!empty($_SESSION['redirect_after_login']) && str_contains($_SESSION['redirect_after_login'], 'lote.php')) {
     // Mantener el QR
 } else {
-    // Auditor puede navegar sin afectar al QR
     $_SESSION['redirect_after_login'] = null;
 }
 
-// =====================================
-// OBTENER ID DEL LOTE
-// =====================================
-$id_lote = $_GET['id'] ?? null;
+/* ============================================================
+   OBTENER ID DEL LOTE (siempre entero)
+   ============================================================ */
 
-if (!$id_lote) {
+$id_lote = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+if ($id_lote <= 0) {
     die("Lote no especificado.");
 }
 
 $db = new Database();
 $conn = $db->getConnection();
 
-// =========================
-// 1. OBTENER DATOS DEL LOTE
-// =========================
+/* ============================================================
+   1. OBTENER DATOS DEL LOTE
+   ============================================================ */
+
 $stmt = $conn->prepare("SELECT * FROM lotes WHERE id = :id");
 $stmt->execute([':id' => $id_lote]);
 $lote = $stmt->fetch();
@@ -43,9 +44,10 @@ if (!$lote) {
     die("Lote no encontrado.");
 }
 
-// =========================
-// 2. OBTENER TRAZABILIDAD
-// =========================
+/* ============================================================
+   2. OBTENER TRAZABILIDAD
+   ============================================================ */
+
 $stmt = $conn->prepare("
     SELECT * FROM trazabilidad 
     WHERE id_lote = :id 
@@ -54,9 +56,10 @@ $stmt = $conn->prepare("
 $stmt->execute([':id' => $id_lote]);
 $trazabilidad = $stmt->fetchAll();
 
-// =========================
-// 3. OBTENER INCIDENCIAS
-// =========================
+/* ============================================================
+   3. OBTENER INCIDENCIAS
+   ============================================================ */
+
 $stmt = $conn->prepare("
     SELECT i.*, u.nombre AS creador
     FROM incidencias i
@@ -73,8 +76,14 @@ include __DIR__ . '/../includes/header.php';
 <div class="auditor-lote-contenedor">
 
     <h1 class="auditor-lote-titulo">
-        Auditoría del lote: <?php echo htmlspecialchars($lote['codigo_lote'] ?? ''); ?>
+        Auditoría del lote: <?php echo htmlspecialchars($lote['codigo_lote']); ?>
     </h1>
+
+    <!-- BOTÓN VOLVER AL PANEL (IZQUIERDA) -->
+    <a href="/auditor/auditor.php"
+       style="display:inline-block; margin-bottom:15px; padding:8px 12px; background:#ddd; border-radius:4px; text-decoration:none; color:#333;">
+        ← Volver al panel
+    </a>
 
     <!-- QR DEL LOTE -->
     <section class="auditor-card">
@@ -152,14 +161,14 @@ include __DIR__ . '/../includes/header.php';
                 <?php foreach ($trazabilidad as $evento): ?>
                     <li>
                         <div class="timeline-etapa">
-                            <h3><?php echo htmlspecialchars($evento['tipo_evento'] ?? ''); ?></h3>
+                            <h3><?php echo htmlspecialchars($evento['tipo_evento']); ?></h3>
 
                             <p><strong>Fecha:</strong> 
                                 <?php echo date("d/m/Y H:i", strtotime($evento['fecha'])); ?>
                             </p>
 
                             <?php if (!empty($evento['descripcion'])): ?>
-                                <p><?php echo nl2br(htmlspecialchars($evento['descripcion'] ?? '')); ?></p>
+                                <p><?php echo nl2br(htmlspecialchars($evento['descripcion'])); ?></p>
                             <?php endif; ?>
                         </div>
                     </li>
@@ -177,28 +186,48 @@ include __DIR__ . '/../includes/header.php';
         <?php else: ?>
             <?php foreach ($incidencias as $inc): ?>
                 <div class="incidencia-card">
-                    <p><strong>Estado:</strong> <?php echo htmlspecialchars($inc['estado'] ?? ''); ?></p>
+                    <p><strong>Estado:</strong> <?php echo htmlspecialchars($inc['estado']); ?></p>
 
                     <p><strong>Fecha:</strong> 
                         <?php echo date("d/m/Y H:i", strtotime($inc['fecha'])); ?>
                     </p>
 
-                    <p><strong>Creada por:</strong> <?php echo htmlspecialchars($inc['creador'] ?? ''); ?></p>
+                    <p><strong>Creada por:</strong> <?php echo htmlspecialchars($inc['creador']); ?></p>
 
                     <p><strong>Descripción:</strong><br>
-                        <?php echo nl2br(htmlspecialchars($inc['descripcion'] ?? '')); ?>
+                        <?php echo nl2br(htmlspecialchars($inc['descripcion'])); ?>
                     </p>
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
     </section>
 
-    <!-- CREAR INCIDENCIA -->
+    <!-- VALIDAR LOTE (A LA DERECHA) -->
+    <?php if ($lote['estado_auditoria'] === 'pendiente'): ?>
+        <form method="POST" action="/auditor/validar_lote.php" 
+              style="margin-bottom:15px; text-align:right;">
+
+            <input type="hidden" name="id_lote" value="<?php echo $id_lote; ?>">
+
+            <button 
+                style="padding:8px 12px; background:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer;">
+                ✔ Validar lote
+            </button>
+        </form>
+    <?php else: ?>
+        <p style="margin-bottom:15px; font-weight:bold; color:green;">
+            ✔ Este lote ya está validado
+        </p>
+    <?php endif; ?>
+
+    <!-- CREAR INCIDENCIA (SIN HR NI BR ANTES) -->
     <section class="auditor-card">
         <h2 class="auditor-subtitulo">Crear incidencia</h2>
 
         <form method="POST" action="/auditor/auditor_incidencia.php" class="auditor-form">
-            <input type="hidden" name="id_lote" value="<?php echo htmlspecialchars($id_lote); ?>">
+
+            <!-- ID del lote SIEMPRE entero y dentro del form -->
+            <input type="hidden" name="id_lote" value="<?php echo $id_lote; ?>">
 
             <label>Descripción de la incidencia</label>
             <textarea name="descripcion" class="textarea-control" required></textarea>

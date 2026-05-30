@@ -134,11 +134,6 @@ include __DIR__ . '/../includes/header.php';
                     </div>
 
                     <div style="display:flex; gap:0.5rem;">
-                        <form method="POST" action="/auditor/validar_lote.php">
-                            <input type="hidden" name="id_lote" value="<?php echo $l['id']; ?>">
-                            <button class="auditor-ver-btn">Validar</button>
-                        </form>
-
                         <a href="/auditor/auditor_lote.php?id=<?php echo $l['id']; ?>" 
                            class="auditor-ver-btn">
                            Ver lote

@@ -3,11 +3,8 @@ require_once __DIR__ . '/auth.php';
 
 $logueado = estaLogueado();
 
-// Detectar si estamos en lote.php y si hay un ID
-$id_lote = null;
-if (isset($_GET['id']) && basename($_SERVER['PHP_SELF']) === 'lote.php') {
-    $id_lote = intval($_GET['id']);
-}
+// Detectar ID del lote en cualquier página
+$id_lote = isset($_GET['id']) ? intval($_GET['id']) : null;
 ?>
 <!DOCTYPE html>
 <html lang="es">
