@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </h1>
 
     <?php if (!empty($errores)): ?>
-        <div style="background:#ffe5e5; border-left:5px solid #ff4d4d; padding:12px; margin-bottom:20px; color:#b30000; font-weight:bold;>
+        <div style="background:#ffe5e5; border-left:5px solid #ff4d4d; padding:12px; margin-bottom:20px; color:#b30000; font-weight:bold;">
             <strong>Se han encontrado errores:</strong><br>
             <?php foreach ($errores as $e): ?>
                 • <?php echo htmlspecialchars($e); ?><br>

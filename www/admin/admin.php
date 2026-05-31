@@ -43,6 +43,11 @@ include __DIR__ . '/../includes/admin_topbar.php';
 ?>
 
 <div class="admin-contenido">
+    
+    <a href="/admin/admin_informe.php" class="admin-btn-crear" style="margin-bottom:20px;">
+        📄 Descargar informe PDF
+    </a>
+
 
     <h1 class="admin-titulo">Resumen del sistema</h1>
 

@@ -15,9 +15,52 @@ if (!$id_incidencia || !$id_lote) {
 $db = new Database();
 $conn = $db->getConnection();
 
+$errores = [];
+
 // Normalizar fechas vacías a NULL
 $fecha_cosecha = !empty($_POST['fecha_cosecha']) ? $_POST['fecha_cosecha'] : null;
 $fecha_produccion = !empty($_POST['fecha_produccion']) ? $_POST['fecha_produccion'] : null;
+
+// ============================
+// VALIDAR CAMPOS NUMÉRICOS
+// ============================
+
+function validarNumero($valor, $campo, &$errores) {
+    if ($valor === '' || $valor === null) {
+        return null;
+    }
+    if (!is_numeric($valor)) {
+        $errores[] = "El campo '$campo' debe ser un número válido.";
+        return null;
+    }
+    return $valor;
+}
+
+$graduacion = validarNumero($_POST['graduacion_alcoholica'] ?? null, "Graduación alcohólica", $errores);
+$acidez = validarNumero($_POST['acidez'] ?? null, "Acidez", $errores);
+$ph = validarNumero($_POST['ph'] ?? null, "pH", $errores);
+$sulfuroso = validarNumero($_POST['sulfuroso_total'] ?? null, "Sulfuroso total", $errores);
+
+// ============================
+// SI HAY ERRORES → MOSTRARLOS
+// ============================
+
+if (!empty($errores)) {
+    include __DIR__ . '/../includes/header.php';
+    include __DIR__ . '/../includes/admin_topbar.php';
+
+    echo '<div style="background:#ffe5e5; border-left:5px solid #ff4d4d; padding:12px; margin:20px; color:#b30000; font-weight:bold;">';
+    echo "<strong>Se han encontrado errores:</strong><br>";
+    foreach ($errores as $e) {
+        echo "• " . htmlspecialchars($e) . "<br>";
+    }
+    echo '</div>';
+
+    echo '<a href="javascript:history.back()" class="admin-btn-crear">Volver</a>';
+
+    include __DIR__ . '/../includes/footer.php';
+    exit;
+}
 
 // ============================
 // 1. ACTUALIZAR DATOS DEL LOTE
@@ -31,10 +74,10 @@ $stmt = $conn->prepare("
         bodega = :bodega,
         nombre_producto = :nombre_producto,
         fecha_produccion = :fecha_produccion,
-        graduacion_alcoholica = :graduacion_alcoholica,
+        graduacion_alcoholica = :graduacion,
         acidez = :acidez,
         ph = :ph,
-        sulfuroso_total = :sulfuroso_total,
+        sulfuroso_total = :sulfuroso,
         descripcion = :descripcion
     WHERE id = :id
 ");
@@ -46,10 +89,10 @@ $stmt->execute([
     ':bodega' => $_POST['bodega'] ?? '',
     ':nombre_producto' => $_POST['nombre_producto'] ?? '',
     ':fecha_produccion' => $fecha_produccion,
-    ':graduacion_alcoholica' => $_POST['graduacion_alcoholica'] ?? '',
-    ':acidez' => $_POST['acidez'] ?? '',
-    ':ph' => $_POST['ph'] ?? '',
-    ':sulfuroso_total' => $_POST['sulfuroso_total'] ?? '',
+    ':graduacion' => $graduacion,
+    ':acidez' => $acidez,
+    ':ph' => $ph,
+    ':sulfuroso' => $sulfuroso,
     ':descripcion' => $_POST['descripcion'] ?? '',
     ':id' => $id_lote
 ]);
