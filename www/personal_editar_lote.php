@@ -11,15 +11,17 @@ if (!estaLogueado()) {
 
 // Si está logueado pero NO es empleado ni admin → 403
 if (!in_array(getRolActual(), ['empleado', 'admin'])) {
-    header("Location: /403.php");
-    exit;
+    error403();
 }
 
+// Validar ID del lote
 $id_lote = $_GET['id'] ?? null;
 
-if (!$id_lote) {
-    die("Lote no especificado.");
+if (!$id_lote || !ctype_digit($id_lote)) {
+    error404();
 }
+
+$id_lote = intval($id_lote);
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -30,7 +32,7 @@ $stmt->execute([':id' => $id_lote]);
 $lote = $stmt->fetch();
 
 if (!$lote) {
-    die("Lote no encontrado.");
+    error404();
 }
 
 // Procesar formulario
@@ -156,9 +158,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if ($editable): ?>
 
                 <?php if ($campo === 'fecha_cosecha' || $campo === 'fecha_produccion'): ?>
+
                     <input type="date" name="<?php echo $campo; ?>">
+
+                <?php elseif (in_array($campo, ['graduacion_alcoholica', 'acidez', 'ph', 'sulfuroso_total'])): ?>
+
+                    <input type="number"
+                           name="<?php echo $campo; ?>"
+                           step="0.01"
+                           inputmode="decimal"
+                           placeholder="Añadir información">
+
                 <?php else: ?>
+
                     <input type="text" name="<?php echo $campo; ?>" placeholder="Añadir información">
+
                 <?php endif; ?>
 
             <?php else: ?>

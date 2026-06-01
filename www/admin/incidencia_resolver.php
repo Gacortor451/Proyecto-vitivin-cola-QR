@@ -12,9 +12,12 @@ function h($value) {
 
 $id_incidencia = $_GET['id'] ?? null;
 
-if (!$id_incidencia) {
-    die("Incidencia no especificada.");
+// Validación del ID
+if (!$id_incidencia || !ctype_digit($id_incidencia)) {
+    error404();
 }
+
+$id_incidencia = intval($id_incidencia);
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -49,8 +52,9 @@ $stmt = $conn->prepare("
 $stmt->execute([':id' => $id_incidencia]);
 $data = $stmt->fetch();
 
+// Si no existe → 404
 if (!$data) {
-    die("Incidencia no encontrada.");
+    error404();
 }
 
 // ============================

@@ -26,7 +26,7 @@ if (!empty($_SESSION['redirect_after_login']) && str_contains($_SESSION['redirec
 $id_lote = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($id_lote <= 0) {
-    die("Lote no especificado.");
+    error404();
 }
 
 $db = new Database();
@@ -41,7 +41,7 @@ $stmt->execute([':id' => $id_lote]);
 $lote = $stmt->fetch();
 
 if (!$lote) {
-    die("Lote no encontrado.");
+    error404();
 }
 
 /* ============================================================
@@ -79,7 +79,7 @@ include __DIR__ . '/../includes/header.php';
         Auditoría del lote: <?php echo htmlspecialchars($lote['codigo_lote']); ?>
     </h1>
 
-    <!-- BOTÓN VOLVER AL PANEL (IZQUIERDA) -->
+    <!-- BOTÓN VOLVER AL PANEL -->
     <a href="/auditor/auditor.php"
        style="display:inline-block; margin-bottom:15px; padding:8px 12px; background:#ddd; border-radius:4px; text-decoration:none; color:#333;">
         ← Volver al panel
@@ -164,11 +164,23 @@ include __DIR__ . '/../includes/header.php';
                             <h3><?php echo htmlspecialchars($evento['tipo_evento']); ?></h3>
 
                             <p><strong>Fecha:</strong> 
-                                <?php echo date("d/m/Y H:i", strtotime($evento['fecha'])); ?>
+                                <?php echo date("d/m/Y", strtotime($evento['fecha'])); ?>
                             </p>
 
                             <?php if (!empty($evento['descripcion'])): ?>
                                 <p><?php echo nl2br(htmlspecialchars($evento['descripcion'])); ?></p>
+                            <?php endif; ?>
+
+                            <?php if (!empty($evento['id_barrica'])): ?>
+                                <p><strong>Barrica:</strong> <?php echo $evento['id_barrica']; ?></p>
+                            <?php endif; ?>
+
+                            <?php if (!empty($evento['id_deposito'])): ?>
+                                <p><strong>Depósito:</strong> <?php echo $evento['id_deposito']; ?></p>
+                            <?php endif; ?>
+
+                            <?php if (!empty($evento['id_partida'])): ?>
+                                <p><strong>Partida:</strong> <?php echo $evento['id_partida']; ?></p>
                             <?php endif; ?>
                         </div>
                     </li>
@@ -202,7 +214,7 @@ include __DIR__ . '/../includes/header.php';
         <?php endif; ?>
     </section>
 
-    <!-- VALIDAR LOTE (A LA DERECHA) -->
+    <!-- VALIDAR LOTE -->
     <?php if ($lote['estado_auditoria'] === 'pendiente'): ?>
         <form method="POST" action="/auditor/validar_lote.php" 
               style="margin-bottom:15px; text-align:right;">
@@ -220,13 +232,12 @@ include __DIR__ . '/../includes/header.php';
         </p>
     <?php endif; ?>
 
-    <!-- CREAR INCIDENCIA (SIN HR NI BR ANTES) -->
+    <!-- CREAR INCIDENCIA -->
     <section class="auditor-card">
         <h2 class="auditor-subtitulo">Crear incidencia</h2>
 
         <form method="POST" action="/auditor/auditor_incidencia.php" class="auditor-form">
 
-            <!-- ID del lote SIEMPRE entero y dentro del form -->
             <input type="hidden" name="id_lote" value="<?php echo $id_lote; ?>">
 
             <label>Descripción de la incidencia</label>

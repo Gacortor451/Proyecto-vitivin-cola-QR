@@ -57,11 +57,16 @@ include __DIR__ . '/../includes/admin_topbar.php';
                            class="admin-btn-tabla editar">Editar rol</a>
 
                         <?php if ($u['id'] != ($_SESSION['usuario'] ?? null)): ?>
-                            <a href="/admin/usuario_eliminar.php?id=<?php echo $u['id']; ?>" 
-                               class="admin-btn-tabla eliminar"
-                               onclick="return confirm('¿Seguro que deseas eliminar este usuario?');">
-                               Eliminar
-                            </a>
+
+                            <!-- FORMULARIO POST PARA ELIMINAR -->
+                            <form action="/admin/usuario_eliminar.php" method="POST" style="display:inline;">
+                                <input type="hidden" name="id" value="<?php echo $u['id']; ?>">
+                                <button type="submit" class="admin-btn-tabla eliminar"
+                                        onclick="return confirm('¿Seguro que deseas eliminar este usuario?');">
+                                    Eliminar
+                                </button>
+                            </form>
+
                         <?php else: ?>
                             <span class="admin-btn-tabla deshabilitado" title="No puedes eliminar tu propio usuario">
                                 No disponible

@@ -20,11 +20,18 @@ $descripcion = trim($_POST['descripcion'] ?? '');
 
 // Validación segura
 if ($id_lote <= 0 || $descripcion === '') {
-    die("Datos incompletos para crear la incidencia.");
+    error404(); // Datos inválidos → 404
 }
 
 $db = new Database();
 $conn = $db->getConnection();
+
+// Verificar que el lote existe antes de insertar
+$stmt = $conn->prepare("SELECT id FROM lotes WHERE id = :id");
+$stmt->execute([':id' => $id_lote]);
+if (!$stmt->fetch()) {
+    error404(); // Lote inexistente → 404
+}
 
 // ID del auditor/admin que crea la incidencia
 $id_usuario_creador = $_SESSION['usuario'];

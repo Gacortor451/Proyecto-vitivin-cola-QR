@@ -5,32 +5,38 @@ requireRole(['admin']);
 
 require_once __DIR__ . '/../config/database.php';
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
-if ($id <= 0) {
-    die("Usuario no especificado.");
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    error403();
 }
+
+$id = $_POST['id'] ?? null;
+
+if (!$id || !ctype_digit($id)) {
+    error404();
+}
+
+$id = intval($id);
 
 $db = new Database();
 $conn = $db->getConnection();
 
 // Evitar que un admin se elimine a sí mismo
 if ($id == ($_SESSION['usuario'] ?? null)) {
-    die("No puedes eliminar tu propio usuario.");
+    error403();
 }
 
 // Verificar que el usuario existe
-$stmt = $conn->prepare("SELECT COUNT(*) FROM usuarios WHERE id = :id");
+$stmt = $conn->prepare("SELECT id FROM usuarios WHERE id = :id");
 $stmt->execute([':id' => $id]);
+$usuario = $stmt->fetch();
 
-if ($stmt->fetchColumn() == 0) {
-    die("El usuario no existe.");
+if (!$usuario) {
+    error404();
 }
 
-// Eliminar usuario (las FK ya gestionan likes, comentarios, incidencias, etc.)
+// Eliminar sin restricciones
 $stmt = $conn->prepare("DELETE FROM usuarios WHERE id = :id");
 $stmt->execute([':id' => $id]);
 
-// Redirigir
 header("Location: /admin/usuarios.php?eliminado=1");
 exit;

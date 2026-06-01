@@ -1045,11 +1045,21 @@ body {
 }
 
 .admin-btn-tabla {
+    display: inline-block;
     padding: 0.4rem 0.8rem;
     border-radius: 6px;
     text-decoration: none;
-    color: white;
     font-size: 0.9rem;
+    border: none;
+    background: none;
+    box-shadow: none;
+    outline: none;
+    cursor: pointer;
+    color: white;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 .admin-btn-tabla.editar {

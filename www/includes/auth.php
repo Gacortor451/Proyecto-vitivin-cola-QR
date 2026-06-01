@@ -5,11 +5,23 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 /**
- * Devuelve el rol actual del usuario.
- * Si no está logueado → visitante
+ * Devuelve el rol actual del usuario usando el ID del rol.
+ * 1 = admin
+ * 2 = auditor
+ * 3 = empleado
+ * 4 = usuario
  */
 function getRolActual() {
-    return strtolower(trim($_SESSION['rol'] ?? 'visitante'));
+
+    $id = $_SESSION['rol_id'] ?? null;
+
+    return match($id) {
+        1 => 'admin',
+        2 => 'auditor',
+        3 => 'empleado',
+        4 => 'usuario',
+        default => 'visitante'
+    };
 }
 
 /**
@@ -21,18 +33,15 @@ function estaLogueado() {
 
 /**
  * Obliga a estar logueado para acceder a una página.
- * Evita bucles si ya estamos en login.php.
  */
 function requireLogin() {
 
     if (!estaLogueado()) {
 
-        // Evitar bucle infinito si ya estamos en login.php
         if (basename($_SERVER['PHP_SELF']) === 'login.php') {
             return;
         }
 
-        // Guardar la URL para redirección inteligente
         $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
 
         header("Location: /login.php");
@@ -42,7 +51,6 @@ function requireLogin() {
 
 /**
  * Obliga a tener uno de los roles permitidos.
- * Evita bucles si ya estamos en login.php.
  */
 function requireRole($roles) {
 
@@ -52,10 +60,8 @@ function requireRole($roles) {
 
     $rolActual = getRolActual();
 
-    // Si no está logueado → login
     if ($rolActual === 'visitante') {
 
-        // Evitar bucle infinito si ya estamos en login.php
         if (basename($_SERVER['PHP_SELF']) === 'login.php') {
             return;
         }
@@ -65,7 +71,6 @@ function requireRole($roles) {
         exit;
     }
 
-    // Si el rol no está permitido → acceso denegado
     if (!in_array($rolActual, $roles)) {
         header("Location: /403.php");
         exit;
@@ -73,11 +78,29 @@ function requireRole($roles) {
 }
 
 /**
- * Si el usuario tiene un rol concreto, redirige.
+ * Redirige si el usuario tiene un rol concreto.
  */
 function redirectIfRole($role, $url) {
     if (getRolActual() === strtolower($role)) {
         header("Location: $url");
         exit;
     }
+}
+
+/**
+ * Página 404
+ */
+function error404() {
+    http_response_code(404);
+    include __DIR__ . '/../404.php';
+    exit;
+}
+
+/**
+ * Página 403
+ */
+function error403() {
+    http_response_code(403);
+    include __DIR__ . '/../403.php';
+    exit;
 }

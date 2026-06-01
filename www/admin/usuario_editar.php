@@ -7,9 +7,12 @@ require_once __DIR__ . '/../config/database.php';
 
 $id = $_GET['id'] ?? null;
 
-if (!$id) {
-    die("Usuario no especificado.");
+// Validación del ID
+if (!$id || !ctype_digit($id)) {
+    error404();
 }
+
+$id = intval($id);
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -24,8 +27,9 @@ $stmt = $conn->prepare("
 $stmt->execute([':id' => $id]);
 $usuario = $stmt->fetch();
 
+// Si no existe → 404
 if (!$usuario) {
-    die("Usuario no encontrado.");
+    error404();
 }
 
 $errores = [];
@@ -80,13 +84,13 @@ include __DIR__ . '/../includes/admin_topbar.php';
         <form action="" method="POST" class="admin-form">
 
             <label>Nombre</label>
-            <input type="text" value="<?php echo htmlspecialchars($usuario['nombre'] ?? ''); ?>" disabled>
+            <input type="text" value="<?php echo htmlspecialchars($usuario['nombre']); ?>" disabled>
 
             <label>Email</label>
-            <input type="email" value="<?php echo htmlspecialchars($usuario['email'] ?? ''); ?>" disabled>
+            <input type="email" value="<?php echo htmlspecialchars($usuario['email']); ?>" disabled>
 
             <label>Rol actual</label>
-            <input type="text" value="<?php echo htmlspecialchars($usuario['rol'] ?? ''); ?>" disabled>
+            <input type="text" value="<?php echo htmlspecialchars($usuario['rol']); ?>" disabled>
 
             <label>Nuevo rol</label>
             <select name="rol" required>

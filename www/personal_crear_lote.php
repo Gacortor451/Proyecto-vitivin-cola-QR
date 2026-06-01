@@ -26,9 +26,11 @@ function limpiarFecha($valor) {
     return ($valor === '' || $valor === null) ? null : $valor;
 }
 
-// Función para limpiar números vacíos
-function limpiarNumero($valor) {
-    return ($valor === '' || $valor === null) ? null : $valor;
+// Validar número
+function validarNumero($valor, $campo) {
+    if ($valor === '' || $valor === null) return null;
+    if (!is_numeric($valor)) return "El campo $campo debe ser un número válido.";
+    return null;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -40,15 +42,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $descripcion = trim($_POST['descripcion']);
     $nombre_producto = trim($_POST['nombre_producto']);
     $fecha_produccion = limpiarFecha($_POST['fecha_produccion']);
-    $graduacion_alcoholica = limpiarNumero($_POST['graduacion_alcoholica']);
-    $acidez = limpiarNumero($_POST['acidez']);
-    $ph = limpiarNumero($_POST['ph']);
-    $sulfuroso_total = limpiarNumero($_POST['sulfuroso_total']);
+
+    $graduacion_alcoholica = $_POST['graduacion_alcoholica'];
+    $acidez = $_POST['acidez'];
+    $ph = $_POST['ph'];
+    $sulfuroso_total = $_POST['sulfuroso_total'];
 
     // Validación básica
     if ($codigo_lote === '') $errores[] = "El código del lote es obligatorio.";
     if ($variedad_uva === '') $errores[] = "La variedad de uva es obligatoria.";
     if ($bodega === '') $errores[] = "La bodega es obligatoria.";
+
+    // Validación numérica
+    if ($error = validarNumero($graduacion_alcoholica, "Graduación alcohólica")) $errores[] = $error;
+    if ($error = validarNumero($acidez, "Acidez")) $errores[] = $error;
+    if ($error = validarNumero($ph, "pH")) $errores[] = $error;
+    if ($error = validarNumero($sulfuroso_total, "Sulfuroso total")) $errores[] = $error;
+
+    // Limpiar números
+    $graduacion_alcoholica = ($graduacion_alcoholica === '' ? null : $graduacion_alcoholica);
+    $acidez = ($acidez === '' ? null : $acidez);
+    $ph = ($ph === '' ? null : $ph);
+    $sulfuroso_total = ($sulfuroso_total === '' ? null : $sulfuroso_total);
 
     if (empty($errores)) {
 
@@ -99,24 +114,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } catch (PDOException $e) {
 
-            // Código de error UNIQUE VIOLATION en PostgreSQL
             if ($e->getCode() === '23505') {
                 $errores[] = "El código de lote $codigo_lote ya existe. Introduce uno diferente.";
             } else {
-                throw $e; // Re-lanzar si es otro error
+                throw $e;
             }
         }
     }
 }
-
-
 ?>
 
 <?php include __DIR__ . '/includes/header.php'; ?>
 
 <div class="personal-editar-contenedor">
 
-    <!-- BOTÓN VOLVER AL PANEL -->
     <a href="/personal.php"
        style="display:inline-block; margin-bottom:15px; padding:8px 12px; background:#ddd; border-radius:4px; text-decoration:none; color:#333;">
         ← Volver al panel
@@ -157,16 +168,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="date" name="fecha_produccion">
 
         <label>Graduación alcohólica</label>
-        <input type="number" step="0.01" name="graduacion_alcoholica">
+        <input type="number" step="0.01" inputmode="decimal" name="graduacion_alcoholica">
 
         <label>Acidez</label>
-        <input type="number" step="0.01" name="acidez">
+        <input type="number" step="0.01" inputmode="decimal" name="acidez">
 
         <label>pH</label>
-        <input type="number" step="0.01" name="ph">
+        <input type="number" step="0.01" inputmode="decimal" name="ph">
 
         <label>Sulfuroso total</label>
-        <input type="number" step="0.01" name="sulfuroso_total">
+        <input type="number" step="0.01" inputmode="decimal" name="sulfuroso_total">
 
         <button type="submit" class="btn-guardar">Crear lote</button>
 

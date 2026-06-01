@@ -6,7 +6,6 @@ $errores = [];
 
 /**
  * 0) Recuperar redirect_after_login desde cookie si existe
- *    (logout.php la guarda cuando auditor/admin cierran sesión)
  */
 if (empty($_SESSION['redirect_after_login']) && !empty($_COOKIE['redirect_after_login'])) {
     $_SESSION['redirect_after_login'] = $_COOKIE['redirect_after_login'];
@@ -30,31 +29,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errores[] = "Debes rellenar todos los campos.";
     } else {
 
-        // Conexión BD
         $db = new Database();
         $conn = $db->getConnection();
 
-        // Buscar usuario por email
         $stmt = $conn->prepare("SELECT * FROM usuarios WHERE email = :email LIMIT 1");
         $stmt->execute([':email' => $email]);
         $usuario = $stmt->fetch();
 
         if ($usuario && password_verify($password, $usuario['password'])) {
 
-            // Guardar sesión
+            // Guardar ID del usuario
             $_SESSION['usuario'] = $usuario['id'];
 
-            // Obtener rol
-            $stmt = $conn->prepare("SELECT nombre FROM roles WHERE id = :id");
-            $stmt->execute([':id' => $usuario['id_rol']]);
-            $rol = strtolower($stmt->fetchColumn());
+            // Guardar ID del rol
+            $_SESSION['rol_id'] = intval($usuario['id_rol']);
 
-            $_SESSION['rol'] = $rol;
+            // Obtener rol normalizado
+            $rol = getRolActual();
 
             /**
              * 2) Redirección del QR
-             *    Empleado y usuario → lote
-             *    Auditor y admin → NO lote (pero NO borran el ID)
              */
             if (!empty($_SESSION['redirect_after_login'])) {
 
@@ -64,8 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header("Location: " . $destino);
                     exit;
                 }
-
-                // Auditor y admin ignoran el QR, pero NO lo borran
             }
 
             /**

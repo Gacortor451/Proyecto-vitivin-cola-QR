@@ -11,14 +11,13 @@ if (!estaLogueado()) {
 
 // Si está logueado pero NO es empleado ni admin → 403
 if (!in_array(getRolActual(), ['empleado', 'admin'])) {
-    header("Location: /403.php");
-    exit;
+    error403();
 }
 
 $id_lote = $_GET['id'] ?? null;
 
-if (!$id_lote) {
-    die("Lote no especificado.");
+if (!$id_lote || !ctype_digit($id_lote)) {
+    error404();
 }
 
 $db = new Database();
@@ -30,29 +29,47 @@ $stmt->execute([':id' => $id_lote]);
 $lote = $stmt->fetch();
 
 if (!$lote) {
-    die("Lote no encontrado.");
+    error404();
 }
 
 // Procesar formulario
 $errores = [];
+
+// Validación numérica
+function validarNumero($valor, $campo) {
+    if ($valor === '' || $valor === null) return null;
+    if (!ctype_digit($valor)) return "El campo $campo debe ser un número válido.";
+    return null;
+}
+
+// Validar existencia de claves foráneas
+function existe($conn, $tabla, $id) {
+    $stmt = $conn->prepare("SELECT id FROM $tabla WHERE id = :id");
+    $stmt->execute([':id' => $id]);
+    return $stmt->fetch() !== false;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $tipo = trim($_POST['tipo_evento']);
     $fecha = trim($_POST['fecha']);
     $descripcion = trim($_POST['descripcion']);
+
     $barrica = $_POST['id_barrica'] ?: null;
     $deposito = $_POST['id_deposito'] ?: null;
     $partida = $_POST['id_partida'] ?: null;
 
-    // Función para validar existencia de claves foráneas
-    function existe($conn, $tabla, $id) {
-        $stmt = $conn->prepare("SELECT id FROM $tabla WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-        return $stmt->fetch() !== false;
+    // Validación básica
+    if ($tipo === '' || $fecha === '') {
+        $errores[] = "El tipo de evento y la fecha son obligatorios.";
     }
 
-    // Validar claves foráneas solo si se envían
+    // Validación numérica real
+    if ($error = validarNumero($barrica, "ID Barrica")) $errores[] = $error;
+    if ($error = validarNumero($deposito, "ID Depósito")) $errores[] = $error;
+    if ($error = validarNumero($partida, "ID Partida")) $errores[] = $error;
+
+    // Validar claves foráneas
     if ($barrica !== null && !existe($conn, 'barricas', $barrica)) {
         $errores[] = "La barrica con ID $barrica no existe.";
     }
@@ -63,11 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($partida !== null && !existe($conn, 'partidas', $partida)) {
         $errores[] = "La partida con ID $partida no existe.";
-    }
-
-    // Validación básica
-    if ($tipo === '' || $fecha === '') {
-        $errores[] = "El tipo de evento y la fecha son obligatorios.";
     }
 
     // Si no hay errores → insertar
@@ -90,7 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':partida' => $partida
         ]);
 
-        // Redirigir al panel del empleado
         header("Location: /personal.php");
         exit;
     }
@@ -110,7 +121,6 @@ $trazabilidad = $stmt->fetchAll();
 
 <div class="personal-lote-contenedor">
 
-    <!-- BOTÓN VOLVER AL PANEL -->
     <a href="/personal.php"
        style="display:inline-block; margin-bottom:15px; padding:8px 12px; background:#ddd; border-radius:4px; text-decoration:none; color:#333;">
         ← Volver al panel
@@ -124,7 +134,6 @@ $trazabilidad = $stmt->fetchAll();
 
         <h2>Añadir evento de trazabilidad</h2>
 
-        <!-- Mostrar errores -->
         <?php if (!empty($errores)): ?>
             <div style="background:#ffe5e5; border-left:5px solid #ff4d4d; padding:12px; margin-bottom:20px; color:#b30000; font-weight:bold;">
                 Se han encontrado errores:<br>
@@ -146,13 +155,13 @@ $trazabilidad = $stmt->fetchAll();
             <textarea name="descripcion" class="textarea-control"></textarea>
 
             <label>ID Barrica (opcional)</label>
-            <input type="number" name="id_barrica">
+            <input type="number" inputmode="decimal" name="id_barrica">
 
             <label>ID Depósito (opcional)</label>
-            <input type="number" name="id_deposito">
+            <input type="number" inputmode="decimal" name="id_deposito">
 
             <label>ID Partida (opcional)</label>
-            <input type="number" name="id_partida">
+            <input type="number" inputmode="decimal" name="id_partida">
 
             <button type="submit" class="btn-guardar">Guardar evento</button>
         </form>
@@ -170,7 +179,7 @@ $trazabilidad = $stmt->fetchAll();
                     <li>
                         <strong><?php echo htmlspecialchars($t['tipo_evento']); ?></strong>
                         <br>
-                        Fecha: <?php echo $t['fecha']; ?>
+                        Fecha: <?php echo date("d/m/Y", strtotime($t['fecha'])); ?>
 
                         <?php if ($t['descripcion']): ?>
                             <p><?php echo nl2br(htmlspecialchars($t['descripcion'])); ?></p>
