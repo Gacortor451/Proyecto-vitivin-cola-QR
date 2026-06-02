@@ -40,29 +40,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $errores = [];
 
-    function validarNumero($valor, $campo) {
+    // --- VALIDACIONES NUMÉRICAS AVANZADAS ---
+    function validarNumeroRango($valor, $campo, $min, $max) {
         if ($valor === '' || $valor === null) return null;
         if (!is_numeric($valor)) return "El campo $campo debe ser un número válido.";
+        if ($valor < $min || $valor > $max) return "El campo $campo debe estar entre $min y $max.";
         return null;
     }
 
-    // Validar SOLO si el campo existe en POST
+    // Graduación alcohólica (5% – 20%)
     if (isset($_POST['graduacion_alcoholica'])) {
-        if ($error = validarNumero($_POST['graduacion_alcoholica'], "Graduación alcohólica")) $errores[] = $error;
+        if ($error = validarNumeroRango($_POST['graduacion_alcoholica'], "Graduación alcohólica", 5, 20)) {
+            $errores[] = $error;
+        }
     }
 
+    // Acidez (3 – 10 g/L)
     if (isset($_POST['acidez'])) {
-        if ($error = validarNumero($_POST['acidez'], "Acidez")) $errores[] = $error;
+        if ($error = validarNumeroRango($_POST['acidez'], "Acidez", 3, 10)) {
+            $errores[] = $error;
+        }
     }
 
+    // pH (2.5 – 4.5)
     if (isset($_POST['ph'])) {
-        if ($error = validarNumero($_POST['ph'], "pH")) $errores[] = $error;
+        if ($error = validarNumeroRango($_POST['ph'], "pH", 2.5, 4.5)) {
+            $errores[] = $error;
+        }
     }
 
+    // Sulfuroso total (0 – 200 mg/L)
     if (isset($_POST['sulfuroso_total'])) {
-        if ($error = validarNumero($_POST['sulfuroso_total'], "Sulfuroso total")) $errores[] = $error;
+        if ($error = validarNumeroRango($_POST['sulfuroso_total'], "Sulfuroso total", 0, 200)) {
+            $errores[] = $error;
+        }
     }
 
+    // --- VALIDACIÓN DE FECHAS ---
+    if (!empty($_POST['fecha_cosecha']) && !empty($_POST['fecha_produccion'])) {
+        if ($_POST['fecha_produccion'] < $_POST['fecha_cosecha']) {
+            $errores[] = "La fecha de producción no puede ser anterior a la fecha de cosecha.";
+        }
+    }
+
+    // --- VALIDACIÓN DE DESCRIPCIÓN ---
+    if (isset($_POST['descripcion']) && $_POST['descripcion'] !== '') {
+        if (strlen(trim($_POST['descripcion'])) < 10) {
+            $errores[] = "La descripción debe tener al menos 10 caracteres.";
+        }
+    }
+
+    // --- VALIDACIÓN DE DESPLEGABLES ---
+    $validar_variedades = ['Tempranillo','Syrah','Garnacha','Merlot','Cabernet Sauvignon','Verdejo','Albariño'];
+    $validar_bodegas = ['Bodega Sierra del Sur','Viñedos del Alba','Bodega Campo Viejo'];
+    $validar_productos = ['Vino Tinto Joven','Vino Roble','Vino Rosado','Vino Crianza','Vino Blanco'];
+
+    if (isset($_POST['variedad_uva']) && $_POST['variedad_uva'] !== '' && !in_array($_POST['variedad_uva'], $validar_variedades)) {
+        $errores[] = "La variedad seleccionada no es válida.";
+    }
+
+    if (isset($_POST['bodega']) && $_POST['bodega'] !== '' && !in_array($_POST['bodega'], $validar_bodegas)) {
+        $errores[] = "La bodega seleccionada no es válida.";
+    }
+
+    if (isset($_POST['nombre_producto']) && $_POST['nombre_producto'] !== '' && !in_array($_POST['nombre_producto'], $validar_productos)) {
+        $errores[] = "El producto seleccionado no es válido.";
+    }
+
+    // Si no hay errores → actualizar
     if (empty($errores)) {
 
         $campos = [
@@ -100,7 +145,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute($params);
         }
 
-        // Mantener el ID del lote
         $_SESSION['ultimo_lote'] = $id_lote;
 
         header("Location: /personal.php");
@@ -111,9 +155,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <?php include __DIR__ . '/includes/header.php'; ?>
 
+<style>
+.campo-bloqueado {
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    color: #555;
+}
+</style>
+
 <div class="personal-editar-contenedor">
 
-    <!-- BOTÓN VOLVER AL PANEL -->
     <a href="/personal.php"
        style="display:inline-block; margin-bottom:15px; padding:8px 12px; background:#ddd; border-radius:4px; text-decoration:none; color:#333;">
         ← Volver al panel
@@ -131,6 +182,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
+
+<?php
+// Listas para desplegables
+$variedades = [
+    'Tempranillo', 'Syrah', 'Garnacha', 'Merlot',
+    'Cabernet Sauvignon', 'Verdejo', 'Albariño'
+];
+
+$bodegas = [
+    'Bodega Sierra del Sur',
+    'Viñedos del Alba',
+    'Bodega Campo Viejo'
+];
+
+$productos = [
+    'Vino Tinto Joven',
+    'Vino Roble',
+    'Vino Rosado',
+    'Vino Crianza',
+    'Vino Blanco'
+];
+?>
 
     <form method="POST" class="form-editar-lote">
 
@@ -157,7 +230,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php if ($editable): ?>
 
-                <?php if ($campo === 'fecha_cosecha' || $campo === 'fecha_produccion'): ?>
+                <?php if ($campo === 'variedad_uva'): ?>
+
+                    <select name="variedad_uva">
+                        <option value="">Seleccionar variedad</option>
+                        <?php foreach ($variedades as $v): ?>
+                            <option value="<?php echo $v; ?>"><?php echo $v; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+
+                <?php elseif ($campo === 'bodega'): ?>
+
+                    <select name="bodega">
+                        <option value="">Seleccionar bodega</option>
+                        <?php foreach ($bodegas as $b): ?>
+                            <option value="<?php echo $b; ?>"><?php echo $b; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+
+                <?php elseif ($campo === 'nombre_producto'): ?>
+
+                    <select name="nombre_producto">
+                        <option value="">Seleccionar producto</option>
+                        <?php foreach ($productos as $p): ?>
+                            <option value="<?php echo $p; ?>"><?php echo $p; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+
+                <?php elseif ($campo === 'descripcion'): ?>
+
+                    <textarea name="descripcion" placeholder="Añadir descripción"></textarea>
+
+                <?php elseif ($campo === 'fecha_cosecha' || $campo === 'fecha_produccion'): ?>
 
                     <input type="date" name="<?php echo $campo; ?>">
 
@@ -177,13 +281,157 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php else: ?>
 
-                <input type="text" value="<?php echo htmlspecialchars($valor); ?>" disabled>
+                <input type="text"
+                       value="<?php echo htmlspecialchars($valor); ?>"
+                       readonly
+                       class="campo-bloqueado">
 
             <?php endif; ?>
 
         <?php endforeach; ?>
 
         <button type="submit" class="btn-guardar">Guardar información</button>
+
+        <!-- ============================= -->
+        <!-- AUTOCOMPLETADOS INTELIGENTES -->
+        <!-- ============================= -->
+
+        <!-- 1. Autocompletar variedad según bodega -->
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const mapaVariedades = {
+                "Bodega Sierra del Sur": "Tempranillo",
+                "Viñedos del Alba": "Syrah",
+                "Bodega Campo Viejo": "Garnacha"
+            };
+
+            const selectBodega = document.querySelector('select[name="bodega"]');
+            const selectVariedad = document.querySelector('select[name="variedad_uva"]');
+
+            if (selectBodega && selectVariedad) {
+
+                selectBodega.addEventListener("change", function() {
+                    const bodega = this.value;
+
+                    if (mapaVariedades[bodega]) {
+                        selectVariedad.value = mapaVariedades[bodega];
+                        selectVariedad.dispatchEvent(new Event("change"));
+                    }
+                });
+            }
+        });
+        </script>
+
+        <!-- 2. Autocompletar producto según variedad -->
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const mapaProductos = {
+                "Tempranillo": "Vino Tinto Joven",
+                "Syrah": "Vino Roble",
+                "Garnacha": "Vino Rosado",
+                "Merlot": "Vino Tinto Joven",
+                "Cabernet Sauvignon": "Vino Crianza",
+                "Verdejo": "Vino Blanco",
+                "Albariño": "Vino Blanco"
+            };
+
+            const selectVariedad = document.querySelector('select[name="variedad_uva"]');
+            const selectProducto = document.querySelector('select[name="nombre_producto"]');
+
+            if (selectVariedad && selectProducto) {
+
+                selectVariedad.addEventListener("change", function() {
+                    const variedad = this.value;
+
+                    if (mapaProductos[variedad]) {
+                        selectProducto.value = mapaProductos[variedad];
+                    }
+                });
+            }
+        });
+        </script>
+
+        <!-- 3. Autocompletar fecha de producción según fecha de cosecha -->
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const inputCosecha = document.querySelector('input[name="fecha_cosecha"]');
+            const inputProduccion = document.querySelector('input[name="fecha_produccion"]');
+
+            if (inputCosecha && inputProduccion) {
+
+                inputCosecha.addEventListener("change", function() {
+
+                    if (inputProduccion.value !== "") return;
+
+                    const fecha = new Date(this.value);
+
+                    if (!isNaN(fecha.getTime())) {
+
+                        fecha.setDate(fecha.getDate() + 15);
+
+                        const año = fecha.getFullYear();
+                        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                        const dia = String(fecha.getDate()).padStart(2, '0');
+
+                        inputProduccion.value = `${año}-${mes}-${dia}`;
+                    }
+                });
+            }
+        });
+        </script>
+
+        <!-- 4. Autocompletar parámetros analíticos según variedad -->
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const mapaAnaliticos = {
+                "Tempranillo": { graduacion: 13.5, acidez: 5.5, ph: 3.6, sulfuroso: 80 },
+                "Syrah": { graduacion: 14.0, acidez: 5.0, ph: 3.5, sulfuroso: 90 },
+                "Garnacha": { graduacion: 13.0, acidez: 4.8, ph: 3.7, sulfuroso: 70 },
+                "Merlot": { graduacion: 13.5, acidez: 5.2, ph: 3.6, sulfuroso: 85 },
+                "Cabernet Sauvignon": { graduacion: 14.0, acidez: 5.8, ph: 3.5, sulfuroso: 95 },
+                "Verdejo": { graduacion: 12.5, acidez: 6.0, ph: 3.2, sulfuroso: 100 },
+                "Albariño": { graduacion: 12.0, acidez: 6.5, ph: 3.1, sulfuroso: 110 }
+            };
+
+            const selectVariedad = document.querySelector('select[name="variedad_uva"]');
+
+            const inputGraduacion = document.querySelector('input[name="graduacion_alcoholica"]');
+            const inputAcidez = document.querySelector('input[name="acidez"]');
+            const inputPH = document.querySelector('input[name="ph"]');
+            const inputSulfuroso = document.querySelector('input[name="sulfuroso_total"]');
+
+            if (selectVariedad) {
+
+                selectVariedad.addEventListener("change", function() {
+
+                    const variedad = this.value;
+
+                    if (mapaAnaliticos[variedad]) {
+
+                        if (inputGraduacion && inputGraduacion.value === "") {
+                            inputGraduacion.value = mapaAnaliticos[variedad].graduacion;
+                        }
+
+                        if (inputAcidez && inputAcidez.value === "") {
+                            inputAcidez.value = mapaAnaliticos[variedad].acidez;
+                        }
+
+                        if (inputPH && inputPH.value === "") {
+                            inputPH.value = mapaAnaliticos[variedad].ph;
+                        }
+
+                        if (inputSulfuroso && inputSulfuroso.value === "") {
+                            inputSulfuroso.value = mapaAnaliticos[variedad].sulfuroso;
+                        }
+                    }
+                });
+            }
+        });
+        </script>
 
     </form>
 

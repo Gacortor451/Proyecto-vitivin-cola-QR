@@ -230,6 +230,36 @@ body {
     text-decoration: none;
 }
 
+.estado-actual {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: #f5f5f5;
+    border-left: 6px solid #999;
+    margin: 15px 0 25px 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.estado-actual .icono {
+    font-size: 22px;
+}
+
+.estado-barrica {
+    border-left-color: #8b4513; /* marrón */
+}
+
+.estado-deposito {
+    border-left-color: #1e90ff; /* azul */
+}
+
+.estado-ninguno {
+    border-left-color: #999; /* gris */
+}
+
+
 /* =======
    LOGIN
    ======= */
