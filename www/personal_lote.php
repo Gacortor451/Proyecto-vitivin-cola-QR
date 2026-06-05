@@ -88,6 +88,17 @@ $tipos_evento_validos = [
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+    $errores = [];
+
+    // ===============================
+    // DEFINIR ESTADO ACTUAL (ANTES DE USARLO)
+    // ===============================
+    $estado_actual = $lote['estado_actual'] ?? 'ninguno';
+    $id_recipiente_actual = $lote['id_recipiente_actual'] ?? null;
+
+    // ===============================
+    // RECOGER DATOS DEL FORMULARIO
+    // ===============================
     $tipo = trim($_POST['tipo_evento']);
     $fecha = trim($_POST['fecha']);
     $descripcion = trim($_POST['descripcion']);
@@ -129,20 +140,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // ===============================
+    // BLOQUEO TOTAL SI EL LOTE ESTÁ EMBOTELLADO
+    // ===============================
+    if ($estado_actual === 'embotellado' && $tipo !== 'Análisis') {
+        $errores[] = "El lote ya está embotellado. Solo puedes registrar análisis.";
+    }
+
+    // ===============================
     // COHERENCIA FÍSICA (NIVEL 2)
     // ===============================
 
-    $estado_actual = $lote['estado_actual'] ?? 'ninguno';
-    $id_recipiente_actual = $lote['id_recipiente_actual'] ?? null;
-
-    // Eventos que requieren barrica
     $eventosBarrica = [
         "Entrada en barrica",
         "Salida de barrica",
         "Trasiego"
     ];
 
-    // Eventos que requieren depósito
     $eventosDeposito = [
         "Movimiento",
         "Filtrado",
@@ -174,21 +187,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($estado_actual === 'ninguno') {
             $errores[] = "No puedes registrar un trasiego si el lote no está en ningún recipiente.";
         }
-        // Si está en barrica → trasiego entre barricas
-        if ($estado_actual === 'barrica') {
-            if ($barrica === null) {
-                $errores[] = "Debes seleccionar una barrica de destino para el trasiego.";
-            }
+        if ($estado_actual === 'barrica' && $barrica === null) {
+            $errores[] = "Debes seleccionar una barrica de destino para el trasiego.";
         }
-        // Si está en depósito → trasiego entre depósitos
-        if ($estado_actual === 'deposito') {
-            if ($deposito === null) {
-                $errores[] = "Debes seleccionar un depósito de destino para el trasiego.";
-            }
+        if ($estado_actual === 'deposito' && $deposito === null) {
+            $errores[] = "Debes seleccionar un depósito de destino para el trasiego.";
         }
     }
 
-    // 4) Eventos de depósito (Movimiento, Filtrado, Clarificación)
+    // 4) Eventos de depósito
     if (in_array($tipo, $eventosDeposito)) {
         if ($estado_actual === 'barrica') {
             $errores[] = "No puedes registrar '$tipo' mientras el lote está en barrica. Debe salir de barrica primero.";
@@ -198,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 5) Embotellado (opcionalmente podrías exigir que esté en depósito)
+    // 5) Embotellado
     if ($tipo === "Embotellado") {
         if ($estado_actual === 'barrica') {
             $errores[] = "No puedes embotellar directamente desde barrica. El lote debe pasar a depósito antes.";
@@ -257,7 +264,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Análisis y Embotellado no cambian estado_actual ni id_recipiente_actual
+        if ($tipo === "Embotellado") {
+            $nuevo_estado = 'embotellado';
+            $nuevo_recipiente = null;
+        }
 
         $stmt = $conn->prepare("
             UPDATE lotes
@@ -274,6 +284,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
+
 
 // Obtener trazabilidad existente
 $stmt = $conn->prepare("
@@ -339,43 +350,53 @@ $trazabilidad = $stmt->fetchAll();
 
         <form method="POST" class="form-evento">
 
-            <label>Tipo de evento</label>
-            <select name="tipo_evento" id="tipo_evento" required>
-                <option value="">Seleccionar evento</option>
-                <?php foreach ($tipos_evento_validos as $t): ?>
-                    <option value="<?php echo $t; ?>"><?php echo $t; ?></option>
-                <?php endforeach; ?>
-            </select>
+    <label>Tipo de evento</label>
+    <select name="tipo_evento" id="tipo_evento" required>
+        <option value="">Seleccionar evento</option>
+        <?php if ($estado === 'embotellado'): ?>
+            <option value="Análisis">Análisis</option>
+        <?php else: ?>
+            <?php foreach ($tipos_evento_validos as $t): ?>
+                <option value="<?php echo $t; ?>"><?php echo $t; ?></option>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </select>
 
-            <label>Fecha</label>
-            <input type="date" name="fecha" value="<?php echo date('Y-m-d'); ?>" required>
+    <label>Fecha</label>
+    <input type="date" name="fecha" value="<?php echo date('Y-m-d'); ?>" required>
 
-            <label>Descripción (opcional)</label>
-            <textarea name="descripcion" class="textarea-control"></textarea>
+    <label>Descripción (opcional)</label>
+    <textarea name="descripcion" class="textarea-control"></textarea>
 
-            <label>Barrica (opcional)</label>
-            <select name="id_barrica" id="id_barrica">
-                <option value="">Ninguna</option>
-                <?php foreach ($lista_barricas as $b): ?>
-                    <option value="<?php echo $b['id']; ?>">
-                        <?php echo $b['id'] . " - " . ($b['codigo'] ?? "Barrica"); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+    <!-- Barrica -->
+    <div id="grupo_barrica">
+        <label>Barrica</label>
+        <select name="id_barrica" id="id_barrica">
+            <option value="">Ninguna</option>
+            <?php foreach ($lista_barricas as $b): ?>
+                <option value="<?php echo $b['id']; ?>">
+                    <?php echo $b['id'] . " - " . ($b['codigo'] ?? "Barrica"); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
 
-            <label>Depósito (opcional)</label>
-            <select name="id_deposito" id="id_deposito">
-                <option value="">Ninguno</option>
-                <?php foreach ($lista_depositos as $d): ?>
-                    <option value="<?php echo $d['id']; ?>">
-                        <?php echo $d['id'] . " - " . ($d['codigo'] ?? "Depósito"); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+    <!-- Depósito -->
+    <div id="grupo_deposito">
+        <label>Depósito</label>
+        <select name="id_deposito" id="id_deposito">
+            <option value="">Ninguno</option>
+            <?php foreach ($lista_depositos as $d): ?>
+                <option value="<?php echo $d['id']; ?>">
+                    <?php echo $d['id'] . " - " . ($d['codigo'] ?? "Depósito"); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
 
-            <button type="submit" class="btn-guardar">Guardar evento</button>
+    <button type="submit" class="btn-guardar">Guardar evento</button>
 
-        </form>
+</form>
 
     </section>
 
@@ -416,46 +437,89 @@ $trazabilidad = $stmt->fetchAll();
 <script>
 document.addEventListener("DOMContentLoaded", function() {
 
-    const ultimoBarrica = <?php echo $ultimo_barrica ? $ultimo_barrica : 'null'; ?>;
-    const ultimoDeposito = <?php echo $ultimo_deposito ? $ultimo_deposito : 'null'; ?>;
+    const estadoActual = "<?php echo $estado; ?>";
+    const recipienteActual = "<?php echo $recipiente; ?>";
 
     const selectTipo = document.getElementById("tipo_evento");
     const selectBarrica = document.getElementById("id_barrica");
     const selectDeposito = document.getElementById("id_deposito");
 
-    function sugerirRecipiente() {
+    const grupoBarrica = document.getElementById("grupo_barrica");
+    const grupoDeposito = document.getElementById("grupo_deposito");
+    
+    // ===============================
+    // BLOQUEO TOTAL SI EL LOTE ESTÁ EMBOTELLADO
+    // ===============================
+    if (estadoActual === "embotellado") {
+
+        // Ocultar campos físicos
+        grupoBarrica.style.display = "none";
+        grupoDeposito.style.display = "none";
+
+        // Forzar tipo de evento = Análisis
+        selectTipo.value = "Análisis";
+
+        // Bloquear cambios
+        selectTipo.disabled = true;
+
+        return; // No ejecutar más lógica
+    }
+
+
+    function actualizarFormulario() {
 
         const tipo = selectTipo.value;
 
-        // Reset sugerencias
+        // Reset
         selectBarrica.value = "";
         selectDeposito.value = "";
+        grupoBarrica.style.display = "block";
+        grupoDeposito.style.display = "block";
 
-        const eventosBarrica = [
-            "Entrada en barrica",
-            "Salida de barrica",
-            "Trasiego"
-        ];
-
-        const eventosDeposito = [
-            "Movimiento",
-            "Filtrado",
-            "Clarificación"
-        ];
-
-        if (eventosBarrica.includes(tipo)) {
-            if (ultimoBarrica !== null) {
-                selectBarrica.value = ultimoBarrica;
+        // Entrada en barrica
+        if (tipo === "Entrada en barrica") {
+            grupoDeposito.style.display = "none";
+            if (estadoActual === "deposito") {
+                selectBarrica.value = "";
             }
         }
 
-        if (eventosDeposito.includes(tipo)) {
-            if (ultimoDeposito !== null) {
-                selectDeposito.value = ultimoDeposito;
+        // Salida de barrica
+        if (tipo === "Salida de barrica") {
+            grupoBarrica.style.display = "none";
+            if (estadoActual === "barrica") {
+                selectDeposito.value = "";
             }
+        }
+
+        // Trasiego
+        if (tipo === "Trasiego") {
+            if (estadoActual === "barrica") {
+                grupoDeposito.style.display = "none";
+                selectBarrica.value = recipienteActual;
+            }
+            if (estadoActual === "deposito") {
+                grupoBarrica.style.display = "none";
+                selectDeposito.value = recipienteActual;
+            }
+        }
+
+        // Eventos de depósito
+        if (["Movimiento","Filtrado","Clarificación"].includes(tipo)) {
+            grupoBarrica.style.display = "none";
+            if (estadoActual === "deposito") {
+                selectDeposito.value = recipienteActual;
+            }
+        }
+
+        // Embotellado / Análisis
+        if (["Embotellado","Análisis"].includes(tipo)) {
+            grupoBarrica.style.display = "none";
+            grupoDeposito.style.display = "none";
         }
     }
 
-    selectTipo.addEventListener("change", sugerirRecipiente);
+    selectTipo.addEventListener("change", actualizarFormulario);
 });
 </script>
+
