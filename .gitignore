@@ -54,3 +54,18 @@ Thumbs.db
 
 # Volúmenes o datos generados por contenedores (si los usas)
 data/
+
+# ============================
+#   CERTIFICADOS
+# ============================
+
+# Claves privadas (NO subir nunca)
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Carpetas donde guardes claves privadas
+certs/*.key
+ssl/*.key
+

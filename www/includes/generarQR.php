@@ -4,8 +4,8 @@ require_once __DIR__ . '/../libs/phpqrcode/qrlib.php';
 
 function generarQRlote($idLote) {
 
-    // URL base dinámica
-    $urlBase = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/lote.php?id=';
+    // URL FIJA para los QR (Host-Only)
+    $baseUrl = "http://192.168.56.105:8080/lote.php?id=";
 
     // Carpeta donde se guardan los QR
     $dir = $_SERVER['DOCUMENT_ROOT'] . "/qr/lotes/";
@@ -14,13 +14,13 @@ function generarQRlote($idLote) {
         mkdir($dir, 0777, true);
     }
 
-    // URL que contendrá el QR
-    $urlQR = $urlBase . $idLote;
+    // URL final del QR
+    $urlQR = $baseUrl . $idLote;
 
     // Ruta física del archivo
     $file = $dir . "qr_lote_" . $idLote . ".png";
 
-    // Generar QR en el archivo físico
+    // Generar QR
     QRcode::png($urlQR, $file, QR_ECLEVEL_L, 6, 4);
 
     // Ruta pública accesible desde el navegador

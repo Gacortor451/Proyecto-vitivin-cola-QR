@@ -6,8 +6,10 @@ services:
     container_name: apache_php
     ports:
       - "8080:80"
+      - "8443:443"
     volumes:
       - ./www:/var/www/html
+      - ./certs:/etc/apache2/certs
     depends_on:
       - db
 

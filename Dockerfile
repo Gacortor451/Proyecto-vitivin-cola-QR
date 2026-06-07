@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     unzip \
     zip \
-    libzip-dev
+    libzip-dev \
+    openssl
 
 # Extensiones PHP
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
@@ -16,3 +17,12 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
 
 # Instalar Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Activar SSL en Apache
+RUN a2enmod ssl
+
+# Copiar tu configuración SSL personalizada
+COPY www-ssl.conf /etc/apache2/sites-available/www-ssl.conf
+
+# Activar tu VirtualHost SSL
+RUN a2ensite www-ssl.conf
