@@ -69,3 +69,8 @@ data/
 certs/*.key
 ssl/*.key
 
+# Dependencias externas instaladas automáticamente por Composer.
+# No deben subirse al repositorio porque se regeneran con:
+#   composer install
+vendor/
+www/vendor/
