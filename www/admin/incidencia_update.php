@@ -17,10 +17,6 @@ $conn = $db->getConnection();
 
 $errores = [];
 
-// Normalizar fechas vacías a NULL
-$fecha_cosecha = !empty($_POST['fecha_cosecha']) ? $_POST['fecha_cosecha'] : null;
-$fecha_produccion = !empty($_POST['fecha_produccion']) ? $_POST['fecha_produccion'] : null;
-
 // ============================
 // VALIDAR CAMPOS NUMÉRICOS
 // ============================
@@ -63,17 +59,11 @@ if (!empty($errores)) {
 }
 
 // ============================
-// 1. ACTUALIZAR DATOS DEL LOTE
+// 1. ACTUALIZAR SOLO CAMPOS EDITABLES
 // ============================
 
 $stmt = $conn->prepare("
     UPDATE lotes SET
-        codigo_lote = :codigo_lote,
-        variedad_uva = :variedad_uva,
-        fecha_cosecha = :fecha_cosecha,
-        bodega = :bodega,
-        nombre_producto = :nombre_producto,
-        fecha_produccion = :fecha_produccion,
         graduacion_alcoholica = :graduacion,
         acidez = :acidez,
         ph = :ph,
@@ -83,12 +73,6 @@ $stmt = $conn->prepare("
 ");
 
 $stmt->execute([
-    ':codigo_lote' => $_POST['codigo_lote'] ?? '',
-    ':variedad_uva' => $_POST['variedad_uva'] ?? '',
-    ':fecha_cosecha' => $fecha_cosecha,
-    ':bodega' => $_POST['bodega'] ?? '',
-    ':nombre_producto' => $_POST['nombre_producto'] ?? '',
-    ':fecha_produccion' => $fecha_produccion,
     ':graduacion' => $graduacion,
     ':acidez' => $acidez,
     ':ph' => $ph,

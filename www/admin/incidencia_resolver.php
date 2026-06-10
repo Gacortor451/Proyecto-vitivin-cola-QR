@@ -117,34 +117,50 @@ include __DIR__ . '/../includes/admin_topbar.php';
             <input type="hidden" name="id_lote" value="<?php echo h($incidencia['id_lote']); ?>">
 
             <label>Código del lote</label>
-            <input type="text" name="codigo_lote" value="<?php echo h($lote['codigo_lote']); ?>" required>
+            <input type="text" name="codigo_lote"
+                   value="<?php echo h($lote['codigo_lote']); ?>"
+                   readonly style="background:#eee; cursor:not-allowed;">
 
             <label>Variedad de uva</label>
-            <input type="text" name="variedad_uva" value="<?php echo h($lote['variedad_uva']); ?>">
+            <input type="text" name="variedad_uva"
+                   value="<?php echo h($lote['variedad_uva']); ?>"
+                   readonly style="background:#eee; cursor:not-allowed;">
 
             <label>Fecha de cosecha</label>
-            <input type="date" name="fecha_cosecha" value="<?php echo h($lote['fecha_cosecha']); ?>">
+            <input type="date" name="fecha_cosecha"
+                   value="<?php echo h($lote['fecha_cosecha']); ?>"
+                   readonly style="background:#eee; cursor:not-allowed;">
 
             <label>Bodega</label>
-            <input type="text" name="bodega" value="<?php echo h($lote['bodega']); ?>">
+            <input type="text" name="bodega"
+                   value="<?php echo h($lote['bodega']); ?>"
+                   readonly style="background:#eee; cursor:not-allowed;">
 
             <label>Nombre del producto</label>
-            <input type="text" name="nombre_producto" value="<?php echo h($lote['nombre_producto']); ?>">
+            <input type="text" name="nombre_producto"
+                   value="<?php echo h($lote['nombre_producto']); ?>"
+                   readonly style="background:#eee; cursor:not-allowed;">
 
             <label>Fecha de producción</label>
-            <input type="date" name="fecha_produccion" value="<?php echo h($lote['fecha_produccion']); ?>">
+            <input type="date" name="fecha_produccion"
+                   value="<?php echo h($lote['fecha_produccion']); ?>"
+                   readonly style="background:#eee; cursor:not-allowed;">
 
             <label>Graduación alcohólica</label>
-            <input type="text" name="graduacion_alcoholica" value="<?php echo h($lote['graduacion_alcoholica']); ?>">
+            <input type="number" step="0.01" name="graduacion_alcoholica"
+                   value="<?php echo h($lote['graduacion_alcoholica']); ?>">
 
             <label>Acidez</label>
-            <input type="text" name="acidez" value="<?php echo h($lote['acidez']); ?>">
+            <input type="number" step="0.01" name="acidez"
+                   value="<?php echo h($lote['acidez']); ?>">
 
             <label>pH</label>
-            <input type="text" name="ph" value="<?php echo h($lote['ph']); ?>">
+            <input type="number" step="0.01" name="ph"
+                   value="<?php echo h($lote['ph']); ?>">
 
             <label>Sulfuroso total</label>
-            <input type="text" name="sulfuroso_total" value="<?php echo h($lote['sulfuroso_total']); ?>">
+            <input type="number" step="0.01" name="sulfuroso_total"
+                   value="<?php echo h($lote['sulfuroso_total']); ?>">
 
             <label>Descripción del lote</label>
             <textarea name="descripcion" class="textarea-control"><?php echo h($lote['descripcion']); ?></textarea>
@@ -157,5 +173,14 @@ include __DIR__ . '/../includes/admin_topbar.php';
     </section>
 
 </div>
+
+<!-- Validación en tiempo real (igual que en empleado) -->
+<script>
+document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.addEventListener('input', () => {
+        input.value = input.value.replace(/[^0-9.,]/g, '');
+    });
+});
+</script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>

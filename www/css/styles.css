@@ -41,6 +41,18 @@ body {
     letter-spacing: 0.5px;
 }
 
+.logo-img {
+    height: 40px;      
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+}
+
 .header-buttons {
     display: flex;
     gap: 0.8rem;

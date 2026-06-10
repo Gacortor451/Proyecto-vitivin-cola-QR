@@ -21,7 +21,9 @@ $id_lote = isset($_GET['id']) ? intval($_GET['id']) : null;
 
         <!-- LOGO IZQUIERDA -->
         <div class="header-logo">
-            <span class="logo-text">(Su logo)</span>
+            <a href="/index.php">
+                <img src="/img/logo.png" alt="Logo" class="logo-img">
+            </a>
         </div>
 
         <!-- BOTONES DERECHA -->
